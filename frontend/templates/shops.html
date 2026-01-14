@@ -1,0 +1,179 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Parcourir les boutiques - DigiStore</title>
+
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/shops.css' %}">
+
+</head>
+
+<body>
+
+    <nav class="navbar">
+
+        <div class="container nav-container">
+
+            <a href="{% url 'index' %}" class="logo">
+
+                <span class="logo-icon">🛍️</span>
+                DigiStore
+            </a>
+
+            <div class="nav-links">
+
+                <a href="{% url 'index' %}" >Accueil</a>
+
+                <a href="{% url 'shops' %}">Parcourir les boutiques</a>
+
+                <a href="{% url 'login' %}" class="nav-link">Connexion</a>
+
+                <a href="{% url 'signup' %}" class="btn btn-primary">Ma boutique</a>
+
+            </div>
+
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- Menu Mobile -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <div class="mobile-menu" id="mobileMenu">
+
+        <div class="mobile-menu-header">
+
+            <div class="logo">
+                <span class="logo-icon">🛍️</span>
+                DigiStore 
+
+            </div>
+
+            <button class="mobile-menu-close" id="mobileMenuClose">&times;</button>
+
+        </div>
+
+        <div class="mobile-menu-links">
+
+            <a href="{% url 'index' %}" >Accueil</a>
+
+            <a href="{% url 'shops' %}" >Parcourir les boutiques</a>
+
+            <a href="{% url 'login' %}">Connexion</a>
+
+            <a href="{% url 'signup' %}" class="btn btn-primary">Ma boutique</a>
+
+        </div>
+    </div>
+
+    <section class="shops-hero">
+
+        <div class="container">
+
+            <h1>Découvrez des boutiques incroyables</h1>
+
+            <p>Parcourez notre marché et trouvez des produits que vous aimez</p>
+
+            <div class="search-filter-bar">
+
+                <div class="search-box">
+
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+
+                    <input type="text" id="searchInput" placeholder="Rechercher des boutiques par nom ou catégorie...">
+                
+                </div>
+
+                <div class="filter-box">
+                    <select id="categoryFilter">
+                        <option value="">Toutes les catégories</option>
+                        <option value="fashion">Mode & Vêtements</option>
+                        <option value="electronics">Électronique</option>
+                        <option value="food">Alimentation & Boissons</option>
+                        <option value="beauty">Beauté & Cosmétiques</option>
+                        <option value="home">Maison & Jardin</option>
+                        <option value="sports">Sports & Fitness</option>
+                        <option value="books">Livres & Fournitures</option>
+                        <option value="toys">Jouets & Jeux</option>
+                        <option value="jewelry">Bijoux & Accessoires</option>
+                        <option value="health">Santé & Bien-être</option>
+                        <option value="automotive">Automobile</option>
+                        <option value="arts">Art & Artisanat</option>
+                        <option value="other">Autre</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="shops-section">
+        <div class="container">
+            <div class="shops-header">
+                <h2>Toutes les boutiques</h2>
+                <div class="shops-count" id="shopsCount">0 boutique trouvée</div>
+            </div>
+
+            <div class="shops-grid" id="shopsGrid">
+                <!-- Les boutiques seront chargées ici par JavaScript -->
+            </div>
+
+            <div class="no-results" id="noResults" style="display: none;">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <h3>Aucune boutique trouvée</h3>
+                <p>Essayez d'ajuster votre recherche ou filtre</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <span class="logo-icon">🛍️</span>
+                        DigiStore
+                    </div>
+                    <p>Permettre aux entrepreneurs de vendre en ligne</p>
+                </div>
+                <div class="footer-links">
+                    <a href="{% url 'index' %}" >Accueil</a>
+                    <a href="{% url 'shops' %}" >Parcourir les boutiques</a>
+                    <a href="{% url 'signup' %}">Créer une boutique</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DigiStore. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static '/js/shops.js' %}"></script>
+
+    <script src="{% static '/js/index.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DigiStore - Créez Votre Boutique en Ligne</title>
+
+    <link rel="stylesheet" href="{% static '/css/index.css' %}">
+
+</head>
+
+<body>
+
+    <nav class="navbar">
+
+        <div class="container nav-container">
+
+            <div class="logo">
+
+                <span class="logo-icon">🛍️</span>
+
+                DigiStore
+
+            </div>
+
+            <div class="nav-links">
+
+                <a href="#features">Fonctionnalités</a>
+
+                <a href="#how-it-works">Comment ça marche</a>
+
+                <a href="{% url 'shops' %}">Parcourir les boutiques</a>
+
+                <a href="{% url 'login' %}" class="nav-link">Connexion</a>
+
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">Ma boutique</a>
+
+            </div>
+
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- Menu Mobile -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <div class="mobile-menu" id="mobileMenu">
+
+        <div class="mobile-menu-header">
+
+            <div class="logo">
+
+                <span class="logo-icon">🛍️</span>
+
+                DigiStore
+            </div>
+
+            <button class="mobile-menu-close" id="mobileMenuClose">&times;</button>
+
+        </div>
+
+        <div class="mobile-menu-links">
+
+                <a href="#features">Fonctionnalités</a>
+
+                <a href="#how-it-works">Comment ça marche</a>
+
+                <a href="{% url 'shops' %}">Parcourir les boutiques</a>
+
+                <a href="{% url 'login' %}" class="nav-link">Connexion</a>
+
+                <a href="{% url 'signup' %}" class="btn btn-primary">Ma boutique</a>
+
+        </div>
+
+    </div>
+
+    <section class="hero">
+
+        <div class="hero-bg-shapes">
+
+            <div class="shape shape-1"></div>
+
+            <div class="shape shape-2"></div>
+
+            <div class="shape shape-3"></div>
+        
+        </div>
+
+        <div class="container">
+
+            <div class="hero-content">
+
+                <div class="hero-badge">✨ Commencez à vendre dès aujourd'hui</div>
+
+                <h1>Créez la Boutique de Vos Rêves<br><span class="gradient-text">En Seulement 5 Minutes</span></h1>
+
+                <p class="hero-subtitle">Évitez la complexité. Gérez vos produits sans effort, mettez en valeur votre inventaire magnifiquement, et commencez à vendre dès aujourd'hui—sans aucune connaissance technique.</p>
+
+                <div class="hero-buttons">
+
+                    <a href="{% url 'signup' %}" class="btn btn-hero">
+
+                        <span>Créez Votre Boutique Maintenant</span>
+
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+
+                    </a>
+
+                    <a href="shops.html" class="btn btn-secondary">
+
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+                            <circle cx="11" cy="11" r="8"></circle>
+
+                            <path d="m21 21-4.35-4.35"></path>
+
+                        </svg>
+
+                        <span>Explorer les Boutiques Existantes</span>
+
+                    </a>
+
+                </div>
+
+                <div class="hero-features">
+
+                    <div class="hero-feature-item">
+
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+                            <polyline points="20 6 9 17 4 12"></polyline>
+
+                        </svg>
+
+                        <span>Configuration Facile</span>
+
+                    </div>
+
+                    <div class="hero-feature-item">
+
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+                            <polyline points="20 6 9 17 4 12"></polyline>
+
+                        </svg>
+
+                        <span>Vitrine Attrayante</span>
+
+                    </div>
+
+                    <div class="hero-feature-item">
+
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+
+                        <span>Aucun Codage Requis</span>
+                    
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="mockup-card mockup-1">
+                    <div class="mockup-header">
+                        <div class="mockup-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <div class="mockup-content">
+                        <div class="mockup-title">Tableau de Bord de Votre Boutique</div>
+                        <div class="mockup-stats">
+                            <div class="stat-box">
+                                <div class="stat-number">24</div>
+                                <div class="stat-label">Produits</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number">156</div>
+                                <div class="stat-label">Vues</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mockup-card mockup-2">
+                    <div class="mockup-product">
+                        <div class="product-image"></div>
+                        <div class="product-info">
+                            <div class="product-name"></div>
+                            <div class="product-desc"></div>
+                            <div class="product-btn"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="floating-icon icon-1">💬</div>
+                <div class="floating-icon icon-2">📦</div>
+                <div class="floating-icon icon-3">✅</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Tout Ce Dont Vous Avez Besoin pour Réussir en Ligne</h2>
+                <p class="section-subtitle">Des fonctionnalités puissantes conçues pour vous aider à vendre davantage</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <h3>Configuration Instantanée</h3>
+                    <p>Créez votre boutique en ligne en quelques minutes. Ajoutez le nom de votre boutique, la catégorie et votre WhatsApp—vous êtes prêt à commencer.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
+                    <h3>Connectez-vous avec vos Clients</h3>
+                    <p>Partagez le lien de votre boutique et laissez les clients vous contacter directement. Une communication simple pour de meilleures relations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                    </div>
+                    <h3>Mise en Avant des Produits</h3>
+                    <p>Des fiches produits attrayantes avec images, descriptions et catégories. Mettez en valeur vos produits.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <h3>Prix Flexibles</h3>
+                    <p>Fixez vos propres prix et méthodes de paiement. Vous contrôlez votre modèle économique.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </div>
+                    <h3>Tableau de Bord Simple</h3>
+                    <p>Gérez tout depuis un seul endroit. Ajoutez, modifiez ou supprimez des produits en quelques clics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Toujours Disponible</h3>
+                    <p>Votre boutique est en ligne 24h/24 et 7j/7. Les clients peuvent parcourir et vous contacter à tout moment, n'importe où.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Commencez en 3 Étapes Simples</h2>
+                <p class="section-subtitle">De l'inscription à votre première vente en quelques minutes</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <h3>Créez Votre Compte</h3>
+                        <p>Inscrivez-vous avec le nom de votre boutique, choisissez une catégorie, ajoutez votre numéro WhatsApp et votre localisation. C'est tout !</p>
+                    </div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <h3>Ajoutez Vos Produits</h3>
+                        <p>Téléchargez des images de produits, rédigez des descriptions et organisez-les par catégorie. Faites briller votre catalogue.</p>
+                    </div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <h3>Commencez à Vendre</h3>
+                        <p>Partagez le lien de votre boutique. Lorsque les clients trouvent des produits qu'ils aiment, ils vous contactent directement sur WhatsApp.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="cta-glow"></div>
+        <div class="container">
+            <div class="cta-content">
+                <h2>Prêt à Lancer Votre Boutique ?</h2>
+                <p>Rejoignez les entrepreneurs qui vendent déjà avec DigiStore. Aucun frais, aucune complexité, juste des résultats.</p>
+                <a href="{% url 'signup' %}" class="btn btn-cta">
+
+                    <span>Commencez à Vendre Dès Aujourd'hui</span>
+
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <span class="logo-icon">🛍️</span>
+                        DigiStore
+                    </div>
+                    <p>Permettre aux entrepreneurs de vendre en ligne</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#features">Fonctionnalités</a>
+                    <a href="#how-it-works">Comment ça marche</a>
+                    <a href="shops.html">Parcourir les boutiques</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+
+                <p>&copy; 2026 DigiStore. Tous droits réservés.</p>
+            </div>
+
+        </div>
+
+    </footer>
+
+    <script src="{% static '/js/index.js' %}"></script>
+
+</body>
+
+</html>

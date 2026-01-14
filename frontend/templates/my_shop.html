@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique - DigiStore</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="{% url 'index' %}" class="logo">
+                <span class="logo-icon">🛍️</span>
+                DigiStore
+            </a>
+            <div class="nav-links">
+                <a href="{% url 'index' %}">Accueil</a>
+                <a href="{% url 'shops' %}">Parcourir les boutiques</a>
+                <a href="{% url 'login' %}" class="nav-link">Connexion</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary">Ma boutique</a>
+            </div>
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu Mobile -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="logo">
+                <span class="logo-icon">🛍️</span>
+                DigiStore
+            </div>
+            <button class="mobile-menu-close" id="mobileMenuClose">&times;</button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="{% url 'index' %}">Accueil</a>
+            <a href="{% url 'shops' %}">Parcourir les boutiques</a>
+            <a href="{% url 'login' %}">Connexion</a>
+            <a href="{% url 'signup' %}" class="btn btn-primary">Ma boutique</a>
+        </div>
+    </div>
+
+    <section class="shop-header">
+        <div class="container">
+            <a href="{% url 'shops' %}" class="back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Retour aux boutiques</span>
+            </a>
+
+            <div class="shop-info-card">
+                <div class="shop-info-left">
+                    <div class="shop-icon-large" id="shopIcon">🛍️</div>
+                    <div class="shop-details">
+                        <h1 id="shopName">Nom de la boutique</h1>
+                        <span class="shop-category-badge" id="shopCategory">Catégorie</span>
+                        <div class="shop-meta-info">
+                            <div class="meta-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <span id="shopLocation">Localisation</span>
+                            </div>
+                            <div class="meta-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                </svg>
+                                <span id="productCount">0 Produits</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="shop-info-right">
+                    <button class="contact-owner-btn" id="contactOwnerBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Contacter le propriétaire</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="products-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Produits</h2>
+                <div class="search-box-small">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" id="productSearch" placeholder="Rechercher des produits...">
+                </div>
+            </div>
+
+            <div class="products-grid" id="productsGrid">
+                <!-- Les produits seront chargés ici -->
+            </div>
+
+            <div class="no-products" id="noProducts" style="display: none;">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <h3>Aucun produit pour l'instant</h3>
+                <p>Cette boutique n'a pas encore ajouté de produits</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <span class="logo-icon">🛍️</span>
+                        DigiStore
+                    </div>
+                    <p>Permettre aux entrepreneurs de vendre en ligne</p>
+                </div>
+                <div class="footer-links">
+                    <a href="{% url 'index' %}">Accueil</a>
+                    <a href="{% url 'shops' %}">Parcourir les boutiques</a>
+                    <a href="{% url 'signup' %}">Créer une boutique</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DigiStore. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/index.js' %}"></script>
+    <script src="{% static 'js/shop.js' %}"></script>
+</body>
+</html>

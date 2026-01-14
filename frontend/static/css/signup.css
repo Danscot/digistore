@@ -1,0 +1,111 @@
+/* Signup Page Specific Styles */
+.auth-left {
+    max-width: 550px !important;
+}
+
+.auth-content h1 {
+    font-size: 2.25rem;
+}
+
+.auth-form {
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding-bottom: 1rem;
+}
+
+.form-group-inline {
+    margin-bottom: 0;
+}
+
+/* Style select dropdowns */
+.form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 3rem;
+    cursor: pointer;
+}
+
+.form-group select:focus {
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Input icons */
+.form-group-with-icon {
+    position: relative;
+}
+
+.form-group-with-icon input {
+    padding-left: 2.75rem;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+    pointer-events: none;
+}
+
+.input-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Form helper text */
+.form-helper {
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin-top: 0.25rem;
+}
+
+/* Terms and conditions */
+.terms-checkbox {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.terms-checkbox .checkbox-label {
+    align-items: flex-start;
+}
+
+.terms-checkbox .checkbox-label span {
+    line-height: 1.5;
+}
+
+.terms-checkbox .checkbox-label a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.terms-checkbox .checkbox-label a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+    
+    .form-group-inline {
+        margin-bottom: 1.25rem;
+    }
+    
+    .auth-content h1 {
+        font-size: 1.85rem;
+    }
+}

@@ -1,0 +1,113 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Connexion - DigiStore</title>
+
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+</head>
+
+<body>
+
+    <div class="auth-container">
+
+        <div class="auth-left">
+
+            <div class="auth-brand">
+
+                <a href="{% url 'index' %}" class="logo">
+
+                    <span class="logo-icon">🛍️</span>
+
+                    DigiStore
+
+                </a>
+
+            </div>
+
+            <div class="auth-content">
+
+                <h1>Content de vous revoir</h1>
+
+                <p>Connectez-vous pour gérer votre boutique et vos produits</p>
+
+                <form class="auth-form" id="loginForm">
+
+                    <div class="form-group">
+
+                        <label for="username">Nom d'utilisateur</label>
+
+                        <input
+
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Entrez votre nom d'utilisateur"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="password">Mot de passe</label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Entrez votre mot de passe"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-footer">
+
+                        <label class="checkbox-label">
+
+                            <input type="checkbox" name="remember">
+
+                            <span>Se souvenir de moi</span>
+
+                        </label>
+
+                        <a href="#" class="forgot-link">Mot de passe oublié ?</a>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+
+                        Se connecter au tableau de bord
+
+                    </button>
+
+                </form>
+
+                <div class="auth-divider">
+
+                    <span>Vous n'avez pas de compte ?</span>
+
+                </div>
+
+                <a href="{% url 'signup' %}" class="btn btn-outline btn-block">
+                    Créer une nouvelle boutique
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/auth.js' %}"></script>
+
+</body>
+
+</html>
