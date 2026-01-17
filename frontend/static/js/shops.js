@@ -100,7 +100,7 @@ function renderShops(shops) {
     
     shopsGrid.innerHTML = shops.map(shop => `
 
-        <a href="shop" class="shop-card">
+        <a href="/shop" class="shop-card">
 
             <div class="shop-card-header">
 

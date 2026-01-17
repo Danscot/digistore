@@ -24,10 +24,13 @@ def login(request):
 
     return render(request, 'login.html')
 
+@login_required(login_url="signup")
 def dashboard(request):
 
     return render(request, 'dashboard.html')
 
+
+@login_required(login_url="login")
 def shop(request):
 
     return render(request, 'my_shop.html')

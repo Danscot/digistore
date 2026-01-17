@@ -44,6 +44,8 @@
 
                 <form class="auth-form" id="loginForm">
 
+                    {% csrf_token %}
+
                     <div class="form-group">
 
                         <label for="username">Nom d'utilisateur</label>

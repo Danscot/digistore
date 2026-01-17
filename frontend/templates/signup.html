@@ -46,6 +46,8 @@
 
                 <form class="auth-form" id="signupForm">
 
+                    {% csrf_token %}
+
                     <div class="form-group">
 
                         <label for="shopName">Nom de la Boutique</label>
@@ -124,7 +126,7 @@
                         <div class="form-group form-group-inline">
                             <label for="username">Mot de passe</label>
                             <input
-                                type="text"
+                                type="password"
                                 id="password1"
                                 name="password"
                                 placeholder="*********"
@@ -135,7 +137,7 @@
                         <div class="form-group form-group-inline">
                             <label for="whatsapp">Confirmer le mot de passe</label>
                             <input
-                                type="text"
+                                type="password"
                                 id="password2"
                                 name="password"
                                 placeholder="*********"
