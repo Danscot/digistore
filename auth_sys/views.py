@@ -6,7 +6,9 @@ from rest_framework.response import Response
 
 from rest_framework import status
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+
+from django.shortcuts import redirect
 
 
 import random
@@ -14,96 +16,96 @@ import random
 
 def gen_code():
 
-    return random.randint(100000, 999999)
+	return random.randint(100000, 999999)
 
 
 @api_view(["POST"])
 def signin(request):
 
-    data = request.data
+	data = request.data
 
-    required_fields = [
-        "shop_name",
-        "shop_category",
-        "username",
-        "wa_num",
-        "location",
-        "password",
-        "password_2",
-    ]
+	required_fields = [
+		"shop_name",
+		"shop_category",
+		"username",
+		"wa_num",
+		"location",
+		"password",
+		"password_2",
+	]
 
-    for field in required_fields:
+	for field in required_fields:
 
-        if not data.get(field):
+		if not data.get(field):
 
-            return Response(
-                {
-                    "status": "failed",
-                    "message": "Vous devez fournir toutes les informations",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+			return Response(
+				{
+					"status": "failed",
+					"message": "Vous devez fournir toutes les informations",
+				},
+				status=status.HTTP_400_BAD_REQUEST,
+			)
 
-    if data["password"] != data["password_2"]:
+	if data["password"] != data["password_2"]:
 
-        return Response(
-            {
-                "status": "failed",
-                "message": "Les mots de passe ne correspondent pas",
-            },
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+		return Response(
+			{
+				"status": "failed",
+				"message": "Les mots de passe ne correspondent pas",
+			},
+			status=status.HTTP_400_BAD_REQUEST,
+		)
 
-    if User.objects.filter(username=data["username"]).exists():
+	if User.objects.filter(username=data["username"]).exists():
 
-        return Response(
-            {
-                "status": "failed",
-                "message": "Ce nom d'utilisateur existe déjà",
-            },
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+		return Response(
+			{
+				"status": "failed",
+				"message": "Ce nom d'utilisateur existe déjà",
+			},
+			status=status.HTTP_400_BAD_REQUEST,
+		)
 
-    if Shop.objects.filter(shop_name=data["shop_name"]).exists():
+	if Shop.objects.filter(shop_name=data["shop_name"]).exists():
 
-        return Response(
-            {
-                "status": "failed",
-                "message": "Une boutique avec ce nom existe déjà",
-            },
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+		return Response(
+			{
+				"status": "failed",
+				"message": "Une boutique avec ce nom existe déjà",
+			},
+			status=status.HTTP_400_BAD_REQUEST,
+		)
 
-    # Create user
-    user = User.objects.create_user(
+	# Create user
+	user = User.objects.create_user(
 
-        username=data["username"],
-        password=data["password"],
-    )
+		username=data["username"],
+		password=data["password"],
+	)
 
-    ver_code = gen_code()
+	ver_code = gen_code()
 
-    # Create shop
-    shop = Shop.objects.create(
-    	
-        shop_name=data["shop_name"],
-        shop_category=data["shop_category"],
-        wa_num=data["wa_num"],
-        location=data["location"],
-        owner=user,
-        shop_id=f"@{data['shop_name'].replace(' ', '_').lower()}"
-    )
+	# Create shop
+	shop = Shop.objects.create(
+		
+		shop_name=data["shop_name"],
+		shop_category=data["shop_category"],
+		wa_num=data["wa_num"],
+		location=data["location"],
+		owner=user,
+		shop_id=f"@{data['shop_name'].replace(' ', '_').lower()}"
+	)
 
-    login(request, user)
+	login(request, user)
 
-    return Response(
-        {
-            "status": "created",
-            "message": "Compte et boutique créés avec succès",
-            "shop_id": shop.id,
-        },
-        status=status.HTTP_201_CREATED,
-    )
+	return Response(
+		{
+			"status": "created",
+			"message": "Compte et boutique créés avec succès",
+			"shop_id": shop.id,
+		},
+		status=status.HTTP_201_CREATED,
+	)
 
 @api_view(["POST"])
 
@@ -148,39 +150,20 @@ def login_view(request):
 			status=status.HTTP_401_UNAUTHORIZED
 		)
 
+
 def user_logout(request):
 
-	try:
-	
-		logout(request)
+	logout(request)
 
-		return Response({
+	return redirect("index")
 
-			"status":"ok",
-
-			"message":"User logout successfully"
-			},
-
-		status=status.HTTP_200_OK
-	)
-
-	except Exception as e:
-
-		return Response({
-
-			"status":"error",
-
-			"message": str(e)
-			},
-
-		status=status.HTTP_500_INTERNAL_SERVER_ERROR
-	)
+		
 
 @api_view(["GET"])
 def check_auth(request):
 
-    if request.user.is_authenticated:
+	if request.user.is_authenticated:
 
-        return Response({"status": "ok"})
+		return Response({"status": "ok"})
 
-    return Response({"status": "unauthorized"}, status=401)
+	return Response({"status": "unauthorized"}, status=401)
