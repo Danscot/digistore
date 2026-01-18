@@ -1,69 +1,79 @@
-// Global state
-let currentShop = null;
-let products = [];
-let editingProductId = null;
+/* ===========================
+   Helpers & State
+=========================== */
+const $ = id => document.getElementById(id);
 
-// Initialize dashboard
+const CATEGORY_CHOICES = [
+    {value:'fashion', label:'Mode & Vêtements'},
+    {value:'electronics', label:'Électronique'},
+    {value:'food', label:'Alimentation & Boissons'},
+    {value:'beauty', label:'Beauté & Cosmétiques'},
+    {value:'home', label:'Maison & Jardin'},
+    {value:'sports', label:'Sports & Fitness'},
+    {value:'books', label:'Livres & Fournitures'},
+    {value:'toys', label:'Jouets & Jeux'},
+    {value:'jewelry', label:'Bijoux & Accessoires'},
+    {value:'health', label:'Santé & Bien-être'},
+    {value:'automotive', label:'Automobile'},
+    {value:'arts', label:'Art & Artisanat'},
+    {value:'other', label:'Autre'},
+];
+
+const state = {
+    currentShop: null,
+    products: [],
+    editingIndex: null,
+};
+
+/* ===========================
+   CSRF Token
+=========================== */
+function getCSRFToken() {
+    return document.cookie.split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
+}
+
+/* ===========================
+   API Helper
+=========================== */
+async function apiRequest(url, method='GET', data=null) {
+    const options = {
+        method,
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
+        },
+    };
+    if (data) options.body = JSON.stringify(data);
+
+    const res = await fetch(url, options);
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); } catch { json = null; }
+
+    if (!res.ok) throw new Error(json?.detail || text || 'Request failed');
+    return json;
+}
+
+/* ===========================
+   Init
+=========================== */
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('productsTableBody')) {
-        fetchDashboardData();
-        setupEventListeners();
-    }
+    setupEventListeners();
+    fetchDashboardData();
+    populateCategoryChoices();
 });
 
-// ===============================
-// CSRF TOKEN
-// ===============================
-function getCSRFToken() {
-    const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
-    return csrfInput ? csrfInput.value : '';
-}
-
-// ===============================
-// GENERIC API REQUEST
-// ===============================
-async function apiRequest(url, method, data = null) {
-    const headers = {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCSRFToken(),
-    };
-
-    const options = {
-        method: method,
-        headers: headers,
-        credentials: 'same-origin', // IMPORTANT for Django sessions
-    };
-
-    if (data) {
-        options.body = JSON.stringify(data);
-    }
-
-    const response = await fetch(url, options);
-    const result = await response.json();
-
-    if (!response.ok) {
-        throw new Error(result.message || 'Une erreur est survenue');
-    }
-
-    return result;
-}
-
-// Fetch dashboard data from Django API
+/* ===========================
+   Dashboard Data
+=========================== */
 async function fetchDashboardData() {
     try {
-        const response = await fetch('/api/dashboard/', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include' // Include cookies for session auth
-        });
-
-        if (!response.ok) throw new Error('Failed to fetch dashboard data');
-
-        const data = await response.json();
-        currentShop = data.shop || {};
-        products = data.products || [];
+        const data = await apiRequest('/api/dashboard/');
+        state.currentShop = data.shop;
+        state.products = data.products || [];
 
         populateShopInfo();
         renderProducts();
@@ -71,383 +81,240 @@ async function fetchDashboardData() {
         setupShopLink();
 
     } catch (err) {
-        console.error('Error fetching dashboard data:', err);
-        alert('Unable to load shop data. Please try again later.');
+        console.error(err);
+        alert('Impossible de charger le tableau de bord');
     }
 }
 
-// Update shop data from Django API
-
-const updateForm = document.getElementById('updateForm');
-
-if (updateForm) {
-
-    updateForm.addEventListener('submit', async (e) => {
-
-        e.preventDefault();
-
-        const shop_name = document.getElementById("shop_name").value.trim()
-
-        const location = document.getElementById("location").value.trim()
-
-        const shop_cat = document.getElementById("shop_cat").value.trim()
-
-        const wa_num = document.getElementById("wa_num").value.trim()
-
-        if ( !shop_name || !location || !shop_cat || !wa_num ) {
-
-           alert('Veuillez remplir tous les champs');
-            return;
-        }
-
-        try {
-
-            await apiRequest('/api/update_shop_infos/', 'POST', {
-
-                shop_name:shop_name,
-                location:location,
-                shop_cat:shop_cat,
-                wa_num:wa_num
-            });
-        } catch (error) {
-
-            alert(error.message)
-        }
-
-    })
-}
-
-// Populate shop info in settings form
+/* ===========================
+   Shop Info
+=========================== */
 function populateShopInfo() {
-    const shopNameInput = document.getElementById('settingsShopName');
-    const categoryInput = document.getElementById('settingsCategory');
-    const whatsappInput = document.getElementById('settingsWhatsapp');
-    const locationInput = document.getElementById('settingsLocation');
-
-    if (shopNameInput) shopNameInput.value = currentShop.name || '';
-    if (categoryInput) categoryInput.value = currentShop.category || '';
-    if (whatsappInput) whatsappInput.value = currentShop.wa_num || '';
-    if (locationInput) locationInput.value = currentShop.location || '';
+    if (!state.currentShop) return;
+    $('settingsShopName').value = state.currentShop.name || '';
+    $('settingsCategory').value = state.currentShop.category || '';
+    $('settingsWhatsapp').value = state.currentShop.wa_num || '';
+    $('settingsLocation').value = state.currentShop.location || '';
 }
 
-// Setup all event listeners
-function setupEventListeners() {
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', e => {
-            e.preventDefault();
-            const section = item.getAttribute('data-section');
-            switchSection(section);
-            if (window.innerWidth <= 1024) closeMobileSidebar();
-        });
-    });
-
-    const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
-    if (mobileSidebarToggle) {
-        mobileSidebarToggle.addEventListener('click', () => {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.contains('active') ? closeMobileSidebar() : openMobileSidebar();
-        });
-    }
-
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeMobileSidebar);
-
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) logoutBtn.addEventListener('click', logout);
-
-    const addProductBtn = document.getElementById('addProductBtn');
-    if (addProductBtn) addProductBtn.addEventListener('click', openAddProductModal);
-
-    const modalClose = document.getElementById('modalClose');
-    const modalOverlay = document.getElementById('modalOverlay');
-    if (modalClose) modalClose.addEventListener('click', closeProductModal);
-    if (modalOverlay) modalOverlay.addEventListener('click', closeProductModal);
-
-    const productForm = document.getElementById('productForm');
-    if (productForm) productForm.addEventListener('submit', saveProduct);
-
-    const shopSettingsForm = document.getElementById('shopSettingsForm');
-    if (shopSettingsForm) shopSettingsForm.addEventListener('submit', saveShopSettings);
-}
-
-// Sidebar functions
-function openMobileSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const toggle = document.getElementById('mobileSidebarToggle');
-    sidebar.classList.add('active');
-    overlay.classList.add('active');
-    toggle.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeMobileSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const toggle = document.getElementById('mobileSidebarToggle');
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    toggle.classList.remove('active');
-    document.body.style.overflow = '';
-}
-
-// Switch content sections
-function switchSection(section) {
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    const navItem = document.querySelector(`[data-section="${section}"]`);
-    if (navItem) navItem.classList.add('active');
-
-    document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
-    const content = document.getElementById(`${section}-section`);
-    if (content) content.classList.add('active');
-
-    const titles = {
-        'overview': { title: 'Dashboard Overview', subtitle: 'Manage your shop and products' },
-        'products': { title: 'Products', subtitle: 'Add, edit, and manage your products' },
-        'shop-settings': { title: 'Shop Settings', subtitle: 'Update your shop information' }
+/* ===========================
+   Shop Info Update
+=========================== */
+$('shopSettingsForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const payload = {
+        shop_name: $('settingsShopName').value.trim(),
+        shop_cat: $('settingsCategory').value.trim(),
+        wa_num: $('settingsWhatsapp').value.trim(),
+        location: $('settingsLocation').value.trim(),
     };
+    if (Object.values(payload).some(v => !v)) return alert('Veuillez remplir tous les champs');
 
-    const sectionTitle = document.getElementById('sectionTitle');
-    const sectionSubtitle = document.getElementById('sectionSubtitle');
-    if (sectionTitle) sectionTitle.textContent = titles[section]?.title || '';
-    if (sectionSubtitle) sectionSubtitle.textContent = titles[section]?.subtitle || '';
+    try {
+        await apiRequest('/api/update_shop_infos/', 'POST', payload);
+        alert('Vos informations ont été mises à jour');
+    } catch (err) { alert(err.message); }
+});
 
-    if (section === 'products' && products.length === 0) {
-        setTimeout(() => {
-            if (confirm('You have no products yet. Add your first product?')) {
-                openAddProductModal();
-            }
-        }, 300);
-    }
-}
-
-// Update stats dynamically
+/* ===========================
+   Stats
+=========================== */
 function updateStats() {
-    const totalProducts = document.getElementById('totalProducts');
-    const totalCategories = document.getElementById('totalCategories');
-    if (totalProducts) totalProducts.textContent = products.length;
-    if (totalCategories) {
-        const uniqueCategories = new Set(products.map(p => p.category));
-        totalCategories.textContent = uniqueCategories.size;
-    }
+    const totalProducts = $('totalProducts');
+    if (totalProducts) totalProducts.textContent = state.products.length;
 }
 
-// Render products dynamically
+/* ===========================
+   Render Products
+=========================== */
 function renderProducts() {
-    const tbody = document.getElementById('productsTableBody');
-    const emptyState = document.getElementById('emptyProducts');
-    if (!tbody || !emptyState) return;
+    const tbody = $('productsTableBody');
+    const empty = $('emptyProducts');
+    if (!tbody) return;
 
-    if (products.length === 0) {
+    if (state.products.length === 0) {
         tbody.innerHTML = '';
-        emptyState.style.display = 'block';
+        if (empty) empty.style.display = 'block';
         return;
     }
+    if (empty) empty.style.display = 'none';
 
-    emptyState.style.display = 'none';
-    tbody.innerHTML = products.map((product, index) => `
+    tbody.innerHTML = state.products.map((p,i)=>`
         <tr>
-            <td>${product.name}</td>
-            <td><span class="product-category-tag">${product.category}</span></td>
-            <td>${product.description}</td>
+            <td>${p.name}</td>
+            <td>${CATEGORY_CHOICES.find(c=>c.value===p.category)?.label||p.category}</td>
+            <td>${p.description}</td>
             <td>
-                <div class="table-actions">
-                    <button class="action-btn edit" onclick="editProduct(${index})">Edit</button>
-                    <button class="action-btn delete" onclick="deleteProduct(${index})">Delete</button>
-                </div>
+                <button class="btn btn-outline edit-btn" onclick="editProduct(${i})">✏️ Modifier</button>
+                <button class="btn btn-danger delete-btn" onclick="deleteProduct(${i})">🗑️ Supprimer</button>
             </td>
         </tr>
     `).join('');
 }
 
-// Modal functions
+/* ===========================
+   Product Modal
+=========================== */
+function populateCategoryChoices() {
+    const select = $('productCategory');
+    if (!select) return;
+    select.innerHTML = CATEGORY_CHOICES.map(c=>`<option value="${c.value}">${c.label}</option>`).join('');
+}
+
 function openAddProductModal() {
-    editingProductId = null;
-    const modal = document.getElementById('productModal');
-    if (!modal) return;
-    document.getElementById('modalTitle').textContent = 'Add Product';
-    document.getElementById('productForm').reset();
-    document.getElementById('productId').value = '';
-    modal.classList.add('active');
+    state.editingIndex = null;
+    const form = $('productForm');
+    form.reset();
+    $('modalTitle').textContent = 'Ajouter un produit';
+    $('productId').value = '';
+    if ($('productPrice')) $('productPrice').value = '';
+    if ($('productNegotiable')) $('productNegotiable').checked = false;
+    $('productModal').classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
 function editProduct(index) {
-    editingProductId = index;
-    const product = products[index];
-    if (!product) return;
-
-    document.getElementById('modalTitle').textContent = 'Edit Product';
-    document.getElementById('productId').value = index;
-    document.getElementById('productName').value = product.name;
-    document.getElementById('productCategory').value = product.category;
-    document.getElementById('productDescription').value = product.description;
-
-    const modal = document.getElementById('productModal');
-    if (modal) {
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-function deleteProduct(index) {
-    if (!products[index]) return;
-    if (confirm('Are you sure you want to delete this product?')) {
-        products.splice(index, 1);
-        renderProducts();
-        updateStats();
-    }
+    state.editingIndex = index;
+    const p = state.products[index];
+    if (!p) return;
+    $('modalTitle').textContent = 'Modifier le produit';
+    $('productId').value = index;
+    $('productName').value = p.name;
+    $('productCategory').value = p.category;
+    $('productDescription').value = p.description;
+    if ($('productPrice')) $('productPrice').value = p.price || '';
+    if ($('productNegotiable')) $('productNegotiable').checked = !!p.negotiable;
+    $('productModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeProductModal() {
-    const modal = document.getElementById('productModal');
-    if (modal) modal.classList.remove('active');
+    $('productModal').classList.remove('active');
     document.body.style.overflow = '';
-    editingProductId = null;
 }
 
-// Save product locally (later can send to API)
-function saveProduct(e) {
+/* ===========================
+   Save Product (API)
+=========================== */
+$('productForm')?.addEventListener('submit', async e=>{
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const productData = {
-        name: formData.get('name'),
-        category: formData.get('category'),
-        description: formData.get('description'),
-        image: null
-    };
-
-    if (editingProductId !== null) {
-        products[editingProductId] = productData;
-    } else {
-        products.push(productData);
-    }
-
-    renderProducts();
-    updateStats();
-    closeProductModal();
-}
-
-// Shop settings save locally (can be extended to API)
-function saveShopSettings(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    currentShop.shopName = formData.get('shopName');
-    currentShop.category = formData.get('category');
-    currentShop.whatsapp = formData.get('whatsapp');
-    currentShop.location = formData.get('location');
-
-    alert('Shop settings updated!');
-}
-
-// Logout
-function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-        window.location.href = '/logout/'; // Change to your logout route
-    }
-}
-
-// Copy shop link
-function setupShopLink() {
-    const shopId = currentShop.id;
-    const shopUrl = `${window.location.origin}/shop/?id=${shopId}`;
-    const shopLinkInput = document.getElementById('shopLinkInput');
-    const copyLinkBtn = document.getElementById('copyLinkBtn');
-    const copySuccess = document.getElementById('copySuccess');
-
-    if (shopLinkInput) shopLinkInput.value = shopUrl;
-
-    if (copyLinkBtn) {
-        copyLinkBtn.addEventListener('click', () => {
-            if (!shopLinkInput) return;
-            shopLinkInput.select();
-            document.execCommand('copy');
-            if (copySuccess) copySuccess.classList.add('show');
-            copyLinkBtn.innerHTML = `<span>Copied!</span>`;
-            setTimeout(() => {
-                if (copySuccess) copySuccess.classList.remove('show');
-                copyLinkBtn.innerHTML = `<span>Copy Link</span>`;
-            }, 2000);
-        });
-    }
-}
-
-// Save product via API
-async function saveProduct(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-
-    const productData = {
-        name: formData.get('name'),
-        category: formData.get('category'),
-        description: formData.get('description'),
-        // You can add image handling later
+    const payload = {
+        name: $('productName').value.trim(),
+        category: $('productCategory').value,
+        description: $('productDescription').value.trim(),
+        price: parseFloat($('productPrice')?.value) || 0,
+        negotiable: $('productNegotiable')?.checked || false,
     };
 
     try {
-
-        let response;
-
-        if (editingProductId !== null) {
-            // Editing an existing product
-            const productId = products[editingProductId].id; // Assuming API returns `id` for each product
-
-            response = await fetch(`/api/products/${productId}/`, {
-
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(productData)
-            });
-
+        let saved;
+        if (state.editingIndex !== null) {
+            const id = state.products[state.editingIndex].id;
+            saved = await apiRequest(`/api/products/${id}/`, 'PUT', payload);
+            state.products[state.editingIndex] = saved;
         } else {
-            // Adding a new product
-            response = await fetch('/api/products/', {
-
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(productData)
-            });
+            saved = await apiRequest('/api/products/', 'POST', payload);
+            state.products.push(saved);
         }
-
-        if (!response.ok) {
-
-            const errorData = await response.json();
-
-            throw new Error(errorData.detail || 'Failed to save product');
-        }
-
-        const savedProduct = await response.json();
-
-        if (editingProductId !== null) {
-            // Update product in local array
-            products[editingProductId] = savedProduct;
-
-        } else {
-            
-            products.push(savedProduct);
-        }
-
         renderProducts();
         updateStats();
         closeProductModal();
+        alert(state.editingIndex !== null ? 'Produit mis à jour !' : 'Produit ajouté !');
+    } catch(err){ alert(err.message); }
+});
 
-        alert(editingProductId !== null ? 'Product updated!' : 'Product added!');
+function deleteProduct(index) {
+    if (!state.products[index]) return;
+    const p = state.products[index];
+    if (!confirm(`Supprimer "${p.name}" ?`)) return;
 
-    } catch (err) {
-        console.error('Error saving product:', err);
-        alert('Error saving product: ' + err.message);
-    }
+    apiRequest(`/api/products/${p.id}/`, 'DELETE')
+        .then(()=> {
+            state.products.splice(index,1);
+            renderProducts();
+            updateStats();
+        })
+        .catch(err=>alert(err.message));
 }
 
+/* ===========================
+   Sidebar / Navigation
+=========================== */
+function setupEventListeners() {
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.addEventListener('click', e => {
+            e.preventDefault();
+            navItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            switchSection(item.dataset.section);
+            closeMobileSidebar();
+        });
+    });
 
-// Expose for inline usage
+    $('mobileSidebarToggle')?.addEventListener('click', () => {
+        $('sidebar')?.classList.toggle('active');
+        $('sidebarOverlay')?.classList.toggle('active');
+    });
+
+    $('sidebarOverlay')?.addEventListener('click', closeMobileSidebar);
+    $('logoutBtn')?.addEventListener('click', logout);
+
+    $('addProductBtn')?.addEventListener('click', openAddProductModal);
+    $('modalClose')?.addEventListener('click', closeProductModal);
+    $('modalOverlay')?.addEventListener('click', closeProductModal);
+}
+
+/* ===========================
+   Sections
+=========================== */
+function switchSection(section) {
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    $(section + '-section')?.classList.add('active');
+
+    const titles = {
+        'overview': { title: 'Aperçu du tableau de bord', subtitle: 'Gérez votre boutique et produits' },
+        'products': { title: 'Produits', subtitle: 'Ajoutez et gérez vos produits' },
+        'shop-settings': { title: 'Paramètres boutique', subtitle: 'Modifiez vos informations de boutique' }
+    };
+    $('sectionTitle').textContent = titles[section]?.title || '';
+    $('sectionSubtitle').textContent = titles[section]?.subtitle || '';
+}
+
+/* ===========================
+   Shop Link
+=========================== */
+function setupShopLink() {
+    if (!state.currentShop?.id) return;
+    const url = `${location.origin}/shop/?id=${state.currentShop.id}`;
+    $('shopLinkInput').value = url;
+    $('copyLinkBtn')?.addEventListener('click', ()=>{
+        $('shopLinkInput').select();
+        document.execCommand('copy');
+        $('copySuccess')?.classList.add('show');
+        setTimeout(()=> $('copySuccess')?.classList.remove('show'),2000);
+    });
+}
+
+/* ===========================
+   Logout
+=========================== */
+function logout() {
+    if (confirm('Se déconnecter ?')) location.href='/logout/';
+}
+
+/* ===========================
+   Utilities
+=========================== */
+function closeMobileSidebar() {
+    $('sidebar')?.classList.remove('active');
+    $('sidebarOverlay')?.classList.remove('active');
+}
+
+/* ===========================
+   Expose for inline
+=========================== */
+window.switchSection = switchSection;
+window.closeProductModal = closeProductModal;
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
-window.closeProductModal = closeProductModal;
-window.switchSection = switchSection;

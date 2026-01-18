@@ -876,3 +876,38 @@
         text-align: center;
     }
 }
+
+/* ===========================
+   Custom Checkbox - Negotiable
+
+/* Modal-specific styling for Price + Checkbox row */
+/* Flex row for price + checkbox */
+.price-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* space between price and checkbox */
+    margin-bottom: 1.5rem;
+}
+
+.price-checkbox-row input[type="number"] {
+    flex: 1; /* input takes remaining space */
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.negotiable-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    color: var(--dark);
+    cursor: pointer;
+}
+
+.negotiable-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}

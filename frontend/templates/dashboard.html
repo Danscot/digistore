@@ -306,30 +306,42 @@
                 <h2 id="modalTitle">Ajouter un produit</h2>
                 <button class="modal-close" id="modalClose">&times;</button>
             </div>
+
             <form class="modal-form" id="productForm">
                 <input type="hidden" id="productId" name="productId">
 
+                <!-- Nom du produit -->
                 <div class="form-group">
                     <label for="productName">Nom du produit</label>
                     <input type="text" id="productName" name="name" placeholder="Entrez le nom du produit" required>
                 </div>
 
+                <!-- Prix et Négociable sur la même ligne -->
+                <div class="form-group flex-row">
+                    <label for="productPrice">Prix</label>
+                    <input type="text" id="productPrice" name="price" placeholder="Ex: 1000 FCFA" required>
+              
+                </div>
+                <!-- Catégorie -->
                 <div class="form-group">
                     <label for="productCategory">Catégorie</label>
-                    <input type="text" id="productCategory" name="category" placeholder="ex. Électronique, Vêtements" required>
+                    <select id="productCategory" name="category" required></select>
                 </div>
 
+                <!-- Description -->
                 <div class="form-group">
                     <label for="productDescription">Description</label>
-                    <textarea id="productDescription" name="description" placeholder="Décrivez votre produit..." rows="4" required></textarea>
+                    <textarea id="productDescription" name="description" placeholder="Décrivez votre produit... et specifiez si le prix est négociable" rows="4" required></textarea>
                 </div>
 
+                <!-- Image (Optionnel) -->
                 <div class="form-group">
                     <label for="productImage">Image du produit (Optionnel)</label>
                     <input type="file" id="productImage" name="image" accept="image/*">
                     <div class="form-helper">Téléchargez une image pour attirer plus de clients</div>
                 </div>
 
+                <!-- Actions -->
                 <div class="modal-actions">
                     <button type="button" class="btn btn-outline" onclick="closeProductModal()">Annuler</button>
                     <button type="submit" class="btn btn-primary">Enregistrer le produit</button>
@@ -337,6 +349,7 @@
             </form>
         </div>
     </div>
+
 
     <script src="{% static 'js/dashboard.js' %}"></script>
 </body>

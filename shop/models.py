@@ -53,9 +53,7 @@ class Product(models.Model):
 
     image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name="Image")
 
-    price = models.CharField(max_length=10, verbose_name="prix du produit")
-
-    can_negotiate = models.BooleanField(default=True)
+    price = models.CharField(max_length=16, verbose_name="prix du produit", default="O")
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
 
