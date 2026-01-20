@@ -1,14 +1,21 @@
 {% load static %}
+
 <!DOCTYPE html>
+
 <html lang="fr">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boutique - DigiStore</title>
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
     <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+
 </head>
+
 <body>
+
     <nav class="navbar">
         <div class="container nav-container">
             <a href="{% url 'index' %}" class="logo">
@@ -19,7 +26,7 @@
                 <a href="{% url 'index' %}">Accueil</a>
                 <a href="{% url 'shops' %}">Parcourir les boutiques</a>
                 <a href="{% url 'login' %}" class="nav-link">Connexion</a>
-                <a href="{% url 'signup' %}" class="btn btn-primary">Ma boutique</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">Ma boutique</a>
             </div>
             <div class="mobile-menu-btn" id="mobileMenuBtn">
                 <span></span>
@@ -43,7 +50,7 @@
             <a href="{% url 'index' %}">Accueil</a>
             <a href="{% url 'shops' %}">Parcourir les boutiques</a>
             <a href="{% url 'login' %}">Connexion</a>
-            <a href="{% url 'signup' %}" class="btn btn-primary">Ma boutique</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-primary">Ma boutique</a>
         </div>
     </div>
 
@@ -61,15 +68,15 @@
                 <div class="shop-info-left">
                     <div class="shop-icon-large" id="shopIcon">🛍️</div>
                     <div class="shop-details">
-                        <h1 id="shopName">Nom de la boutique</h1>
-                        <span class="shop-category-badge" id="shopCategory">Catégorie</span>
+                        <h1 id="shopName">{{ shop.shop_name }}</h1>
+                        <span class="shop-category-badge" id="shopCategory">{{ shop.shop_category }}</span>
                         <div class="shop-meta-info">
                             <div class="meta-item">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                     <circle cx="12" cy="10" r="3"></circle>
                                 </svg>
-                                <span id="shopLocation">Localisation</span>
+                                <span id="shopLocation">{{ shop.location }}</span>
                             </div>
                             <div class="meta-item">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -78,7 +85,7 @@
                                     <rect x="14" y="14" width="7" height="7"></rect>
                                     <rect x="3" y="14" width="7" height="7"></rect>
                                 </svg>
-                                <span id="productCount">0 Produits</span>
+                                <span id="productCount">{{ num }} Produits</span>
                             </div>
                         </div>
                     </div>
@@ -89,6 +96,7 @@
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                         </svg>
                         <span>Contacter le propriétaire</span>
+
                     </button>
                 </div>
             </div>
@@ -106,6 +114,7 @@
                     </svg>
                     <input type="text" id="productSearch" placeholder="Rechercher des produits...">
                 </div>
+
             </div>
 
             <div class="products-grid" id="productsGrid">
@@ -146,6 +155,21 @@
             </div>
         </div>
     </footer>
+    *
+    <script id="shop-data" type="application/json">
+        {{ shop_json|safe }}
+    </script>
+
+    <script id="products-data" type="application/json">
+        {{ products_json|safe }}
+    </script>
+
+    <script id="meta-data" type="application/json">
+    {
+        "length": "{{ num }}"
+    }
+    </script>
+
 
     <script src="{% static 'js/index.js' %}"></script>
     <script src="{% static 'js/shop.js' %}"></script>

@@ -27,7 +27,7 @@ def dashboard_data(request):
 
 	products = shop.products.all().values(
 
-		"id", "name", "category", "description"
+		"id", "name", "category", "description", "price"
 	)
 
 	return Response({
@@ -182,7 +182,7 @@ def manage_product(request, product_id=None):
 
 		product.shop = current_shop
 
-		product.price = "0"
+		product.price = data["price"]
 
 		# Optional: handle image if provided
 		if request.FILES.get("image"):
@@ -217,6 +217,8 @@ def manage_product(request, product_id=None):
 			category=data["category"],
 
 			description=data["description"],
+
+			price=data["price"],
 
 			image=request.FILES.get("image")
 		)

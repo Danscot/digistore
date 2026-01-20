@@ -48,6 +48,8 @@ async function apiRequest(url, method='GET', data=null) {
     };
     if (data) options.body = JSON.stringify(data);
 
+    console.log(data)
+
     const res = await fetch(url, options);
     const text = await res.text();
     let json;
@@ -167,7 +169,7 @@ function openAddProductModal() {
     form.reset();
     $('modalTitle').textContent = 'Ajouter un produit';
     $('productId').value = '';
-    if ($('productPrice')) $('productPrice').value = '';
+    $('productPrice').value = '';
     if ($('productNegotiable')) $('productNegotiable').checked = false;
     $('productModal').classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -182,7 +184,7 @@ function editProduct(index) {
     $('productName').value = p.name;
     $('productCategory').value = p.category;
     $('productDescription').value = p.description;
-    if ($('productPrice')) $('productPrice').value = p.price || '';
+    $('productPrice').value = p.price;
     if ($('productNegotiable')) $('productNegotiable').checked = !!p.negotiable;
     $('productModal').classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -202,7 +204,7 @@ $('productForm')?.addEventListener('submit', async e=>{
         name: $('productName').value.trim(),
         category: $('productCategory').value,
         description: $('productDescription').value.trim(),
-        price: parseFloat($('productPrice')?.value) || 0,
+        price: $('productPrice').value.trim() || "0 XAF",
         negotiable: $('productNegotiable')?.checked || false,
     };
 
@@ -286,7 +288,7 @@ function switchSection(section) {
 =========================== */
 function setupShopLink() {
     if (!state.currentShop?.id) return;
-    const url = `${location.origin}/shop/?id=${state.currentShop.id}`;
+    const url = `${location.origin}/shop/${state.currentShop.id}`;
     $('shopLinkInput').value = url;
     $('copyLinkBtn')?.addEventListener('click', ()=>{
         $('shopLinkInput').select();

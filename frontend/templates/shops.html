@@ -38,7 +38,7 @@
 
                 <a href="{% url 'login' %}" class="nav-link">Connexion</a>
 
-                <a href="{% url 'signup' %}" class="btn btn-primary">Ma boutique</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">Ma boutique</a>
 
             </div>
 
@@ -79,7 +79,7 @@
 
             <a href="{% url 'login' %}">Connexion</a>
 
-            <a href="{% url 'signup' %}" class="btn btn-primary">Ma boutique</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-primary">Ma boutique</a>
 
         </div>
     </div>
@@ -171,6 +171,10 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        const SHOPS_DATA = {{ shops|safe }};
+    </script>
 
     <script src="{% static '/js/shops.js' %}"></script>
 
