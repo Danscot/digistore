@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from django.shortcuts import redirect
 
+from shop.models import Shop, Product
 
 import random
 
