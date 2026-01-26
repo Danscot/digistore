@@ -81,7 +81,7 @@ function renderShopInfo() {
     empty.style.display = 'none';
 
     grid.innerHTML = products.map(p => {
-        console.log(p)
+        console.log(p.id)
         const mainImage = p.images?.[0] || null;
         const thumbnails = p.images?.slice(1) || [];
 
@@ -107,7 +107,7 @@ function renderShopInfo() {
                 <div class="product-price">${p.price.toLocaleString()} FCFA</div>
 
                 <div class='btn'>
-                    <button class="view-product-btn" data-name="${p.name}">📦 Voir le produit</button>
+                    <button class="view-product-btn" data-name="${p.id}">📦 Voir le produit</button>
                     <button class="contact-product-btn" data-name="${p.name}">💬 Contacter</button>
                 </div>
             </div>
@@ -116,6 +116,10 @@ function renderShopInfo() {
 
     document.querySelectorAll('.contact-product-btn').forEach(btn => {
         btn.onclick = () => contactAboutProduct(btn.dataset.name);
+    });
+
+    document.querySelectorAll('.view-product-btn').forEach(btn => {
+        btn.onclick = () => viewProduct(btn.dataset.name);
     });
 }
 
@@ -127,6 +131,19 @@ function contactAboutProduct(productName) {
     const wa = shopData.whatsapp.replace(/[^0-9]/g, '');
     window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
 }
+
+/* ===========================
+   View Product Details
+=========================== */
+function viewProduct(id) {
+
+    const shop = shopData.id;
+
+    window.open(`/view_prod/${shop}/${id}/`, '_blank');
+
+//     window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
+ }
+
 
 /* ===========================
    Search

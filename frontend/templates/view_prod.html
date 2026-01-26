@@ -1,0 +1,172 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produit - DigiStore</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/view_prod.css' %}">
+</head>
+<body>
+    <!-- Barre de navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="{% url 'index' %}" class="logo">
+                <span class="logo-icon">🛍️</span>
+                DigiStore
+            </a>
+            <div class="nav-links">
+                <a href="{% url 'index' %}">Accueil</a>
+                <a href="{% url 'shops' %}">Boutiques</a>
+                <a href="{% url 'login' %}" class="nav-link">Connexion</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary">Commencer</a>
+            </div>
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu mobile -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="logo">
+                <span class="logo-icon">🛍️</span>
+                DigiStore
+            </div>
+            <button class="mobile-menu-close" id="mobileMenuClose">&times;</button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="{% url 'index' %}">Accueil</a>
+            <a href="{% url 'shops' %}">Boutiques</a>
+            <a href="{% url 'login' %}">Connexion</a>
+            <a href="{% url 'signup' %}" class="btn btn-primary">Commencer</a>
+        </div>
+    </div>
+
+    <!-- Section détail du produit -->
+    <section class="product-detail-section">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="{% url 'shops' %}">Boutiques</a>
+                <span>/</span>
+                <a href="#" id="shopBreadcrumb">Nom de la boutique</a>
+                <span>/</span>
+                <span id="productBreadcrumb">Produit</span>
+            </div>
+
+            <div class="product-detail-grid">
+                <div class="product-image-section">
+                    <div class="main-product-image" id="mainProductImage">
+                        <div class="image-placeholder">📦</div>
+                    </div>
+                    <div class="product-category-badge" id="detailCategory">Catégorie</div>
+                </div>
+
+                <div class="product-info-section">
+                    <h1 id="productName">Nom du produit</h1>
+
+                    <div class="shop-info-mini">
+                        <div class="shop-mini-icon" id="shopMiniIcon">🛍️</div>
+                        <div class="shop-mini-details">
+                            <div class="shop-mini-label">Vendu par</div>
+                            <div class="shop-mini-name" id="shopMiniName">Nom de la boutique</div>
+                        </div>
+                        <a href="#" id="visitShopLink" class="visit-shop-link" target="_blank">
+                            <span>Visiter la boutique</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="7" y1="17" x2="17" y2="7"></line>
+                                <polyline points="7 7 17 7 17 17"></polyline>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="product-description">
+                        <h3>Description</h3>
+                        <p id="productDescription">La description du produit s'affichera ici...</p>
+                    </div>
+
+                    <div class="contact-section">
+                        <button class="contact-seller-btn" id="contactSellerBtn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <div>
+                                <div class="btn-title">Contacter le vendeur</div>
+                                <div class="btn-subtitle">Obtenez le prix et les détails via WhatsApp</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span id="shopLocation">Localisation</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <span>Ajouté récemment</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section produits similaires -->
+    <section class="related-products-section">
+        <div class="container">
+            <h2>Produits similaires</h2>
+            <p class="section-subtitle">D'autres articles de cette boutique</p>
+
+            <div class="related-products-grid" id="relatedProductsGrid">
+                <!-- Les produits similaires seront chargés ici -->
+            </div>
+
+            <div class="no-related" id="noRelated" style="display: none;">
+                <p>Aucun autre produit disponible dans cette boutique</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pied de page -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <span class="logo-icon">🛍️</span>
+                        DigiStore
+                    </div>
+                    <p>Nous aidons les entrepreneurs camerounais à vendre en ligne</p>
+                </div>
+                <div class="footer-links">
+                    <a href="{% url 'index' %}">Accueil</a>
+                    <a href="{% url 'shops' %}">Boutiques</a>
+                    <a href="{% url 'signup' %}">Créer une boutique</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DigiStore. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/index.js' %}"></script>
+    <script src="{% static 'js/view_prod.js' %}"></script>
+</body>
+</html>

@@ -9,6 +9,8 @@ urlpatterns = [
     
     path('api/update_shop_infos/', views.update_shop_infos, name="update_shop_infos"),
 
+    path('api/shop/<str:shop_id>/', views.shop_detail, name='shop_detail'),
+
     # Product CRUD
 
     path('api/products/', views.manage_product, name='create_product'),
@@ -16,5 +18,7 @@ urlpatterns = [
     path('api/products/<int:product_id>/', views.manage_product, name='update_product'),
 ]
 
-# Serve media files in development
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

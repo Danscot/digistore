@@ -157,3 +157,42 @@ def manage_product(request, product_id=None):
             for img in product.image
         ] if product.image else []
     }, status=200 if request.method == "PUT" else 201)
+
+
+
+@api_view(["GET"])
+def shop_detail(request, shop_id):
+
+    shop = get_object_or_404(Shop, shop_id=shop_id)
+
+    products_qs = shop.products.all().values(
+
+        "id", "name", "category", "description", "image"
+    )
+
+    products_list = []
+
+    for p in products_qs:
+
+        print(p)
+
+        images = [request.build_absolute_uri(settings.MEDIA_URL + img) for img in p["image"]] if p["image"] else []
+
+        products_list.append({
+            "id": p["id"],
+            "name": p["name"],
+            "category": p["category"],
+            "description": p["description"],
+            "image": images
+        })
+
+    return Response({
+        "shop": {
+            "id": shop.shop_id,
+            "name": shop.shop_name,
+            "category": shop.shop_category,
+            "location": shop.location,
+            "wa_num": shop.wa_num
+        },
+        "products": products_list
+    })

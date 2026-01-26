@@ -20,7 +20,9 @@ urlpatterns = [
 
     path('shop/<str:shop_id>/', views.shop, name='shop_with_id'),
 
-    path('shop/', views.shops, name="shop")
+    path('shop/', views.shops, name="shop"),
+
+    path('view_prod/<str:shopId>/<int:productId>/', views.view_prod, name="view_prod")
 
 ] 
 
