@@ -58,6 +58,7 @@ async function apiRequest(url, method='GET', body=null, isForm=false) {
     if (!res.ok) throw new Error(json?.detail || text || 'Erreur serveur');
     return json;
 }
+
 /* ===========================
    Init
 =========================== */
@@ -83,7 +84,12 @@ async function fetchDashboardData() {
 
     } catch (err) {
         console.error(err);
-        alert('Impossible de charger le tableau de bord');
+        Swal.fire({
+            title: 'Erreur',
+            text: 'Impossible de charger le tableau de bord',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
@@ -109,12 +115,32 @@ $('shopSettingsForm')?.addEventListener('submit', async e => {
         wa_num: $('settingsWhatsapp').value.trim(),
         location: $('settingsLocation').value.trim(),
     };
-    if (Object.values(payload).some(v => !v)) return alert('Veuillez remplir tous les champs');
+    if (Object.values(payload).some(v => !v)) {
+        Swal.fire({
+            title: 'Erreur',
+            text: 'Veuillez remplir tous les champs',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
 
     try {
         await apiRequest('/api/update_shop_infos/', 'POST', payload);
-        alert('Vos informations ont été mises à jour');
-    } catch (err) { alert(err.message); }
+        Swal.fire({
+            title: 'Succès',
+            text: 'Vos informations ont été mises à jour',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    } catch (err) {
+        Swal.fire({
+            title: 'Erreur',
+            text: err.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
 });
 
 /* ===========================
@@ -193,7 +219,6 @@ function closeProductModal() {
     document.body.style.overflow = '';
 }
 
-
 /* ===========================
    Save Product (Supports API & Optional Image)
 =========================== */
@@ -223,26 +248,59 @@ $('productForm')?.addEventListener('submit', async e => {
         renderProducts();
         updateStats();
         closeProductModal();
-        alert('Produit enregistré');
+        Swal.fire({
+            title: 'Succès',
+            text: 'Produit enregistré',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
     } catch (err) {
-        alert(err.message);
+        Swal.fire({
+            title: 'Erreur',
+            text: err.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 });
 
 /* ===========================
    Delete Product
 =========================== */
-function deleteProduct(index) {
+async function deleteProduct(index) {
     const p = state.products[index];
-    if (!confirm(`Supprimer "${p.name}" ?`)) return;
+    if (!p) return;
 
-    apiRequest(`/api/products/${p.id}/`, 'DELETE')
-        .then(() => {
-            state.products.splice(index, 1);
-            renderProducts();
-            updateStats();
-        })
-        .catch(err => alert(err.message));
+    const result = await Swal.fire({
+        title: 'Confirmer',
+        text: `Supprimer "${p.name}" ?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler'
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+        await apiRequest(`/api/products/${p.id}/`, 'DELETE');
+        state.products.splice(index, 1);
+        renderProducts();
+        updateStats();
+        Swal.fire({
+            title: 'Succès',
+            text: 'Produit supprimé',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    } catch (err) {
+        Swal.fire({
+            title: 'Erreur',
+            text: err.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
 }
 
 /* ===========================
@@ -308,7 +366,16 @@ function setupShopLink() {
    Logout
 =========================== */
 function logout() {
-    if (confirm('Se déconnecter ?')) location.href='/logout/';
+    Swal.fire({
+        title: 'Confirmer',
+        text: 'Se déconnecter ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, se déconnecter',
+        cancelButtonText: 'Annuler'
+    }).then((result) => {
+        if (result.isConfirmed) location.href='/logout/';
+    });
 }
 
 /* ===========================

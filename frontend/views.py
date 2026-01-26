@@ -59,9 +59,13 @@ def login(request):
 @login_required(login_url="signup")
 def dashboard(request):
 
-	current_shop = Shop.objects.get(owner=request.user)
+	if Shop.objects.filter(owner=request.user).exists():
 
-	return render(request, 'dashboard.html', {"id":current_shop.shop_id})
+		current_shop = Shop.objects.get(owner=request.user)
+
+		return render(request, 'dashboard.html', {"id":current_shop.shop_id})
+
+	return render(request, 'index_fr.html')
 
 def shop(request, shop_id):
 
@@ -87,12 +91,14 @@ def shop(request, shop_id):
 		images = [request.build_absolute_uri(settings.MEDIA_URL + img) for img in p.image] if p.image else []
 
 		products_data.append({
+
 			"id": p.id,
 			"name": p.name,
 			"description": p.description,
 			"category": p.category,
 			"price": p.price,
 			"images": images,
+
 		})
 
 	context = {

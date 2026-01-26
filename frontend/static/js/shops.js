@@ -12,6 +12,12 @@ if (typeof SHOPS_DATA !== "undefined" && Array.isArray(SHOPS_DATA)) {
     allShops = SHOPS_DATA;
 } else {
     console.error("SHOPS_DATA missing or invalid");
+    Swal.fire({
+        title: 'Erreur',
+        text: 'Données des boutiques manquantes ou invalides',
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
 }
 
 /* ===========================
@@ -65,11 +71,10 @@ function renderShops(shops) {
     }
 
     empty.style.display = 'none';
-    count.textContent = `${shops.length} boutique${shops.length > 1 ? 's' : ''} trouvée`;
+    count.textContent = `${shops.length} boutique${shops.length > 1 ? 's' : ''} trouvée${shops.length > 1 ? 's' : ''}`;
 
     grid.innerHTML = shops.map(shop => `
         <a href="/shop/${shop.shop_id}/" class="shop-card">
-
             <div class="shop-card-header">
                 <div class="shop-icon">
                     ${CATEGORY_ICONS[shop.shop_category] || '🛍️'}
@@ -78,7 +83,6 @@ function renderShops(shops) {
 
             <div class="shop-card-body">
                 <h3 class="shop-name">${shop.shop_name}</h3>
-
                 <span class="shop-category">
                     ${CATEGORY_NAMES[shop.shop_category] || shop.shop_category}
                 </span>
@@ -88,7 +92,7 @@ function renderShops(shops) {
                         📍 <span>${shop.location}</span>
                     </div>
                     <div class="shop-meta-item">
-                        📦 <span>${shop.product_count} produits</span>
+                        📦 <span>${shop.product_count} produit${shop.product_count > 1 ? 's' : ''}</span>
                     </div>
                 </div>
             </div>
@@ -109,7 +113,7 @@ function filterShops() {
     const search = $('searchInput').value.toLowerCase();
     const category = $('categoryFilter').value;
 
-    let filtered = allShops;
+    let filtered = [...allShops];
 
     if (search) {
         filtered = filtered.filter(shop =>
@@ -126,9 +130,25 @@ function filterShops() {
 }
 
 /* ===========================
+   Populate Category Filter
+=========================== */
+function populateCategoryFilter() {
+    const filter = $('categoryFilter');
+    if (!filter) return;
+
+    filter.innerHTML = `
+        <option value="">Toutes les catégories</option>
+        ${Object.entries(CATEGORY_NAMES).map(([value, label]) =>
+            `<option value="${value}">${label}</option>`
+        ).join('')}
+    `;
+}
+
+/* ===========================
    Init
 =========================== */
 document.addEventListener('DOMContentLoaded', () => {
+    populateCategoryFilter();
     renderShops(allShops);
 
     $('searchInput')?.addEventListener('input', filterShops);

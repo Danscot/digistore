@@ -68,7 +68,8 @@ function renderShopInfo() {
 
 /* ===========================
    Render Products
-=========================== */function renderProducts(products) {
+=========================== */
+function renderProducts(products) {
     const grid = $('productsGrid');
     const empty = $('noProducts');
 
@@ -81,7 +82,6 @@ function renderShopInfo() {
     empty.style.display = 'none';
 
     grid.innerHTML = products.map(p => {
-        console.log(p.id)
         const mainImage = p.images?.[0] || null;
         const thumbnails = p.images?.slice(1) || [];
 
@@ -107,7 +107,7 @@ function renderShopInfo() {
                 <div class="product-price">${p.price.toLocaleString()} FCFA</div>
 
                 <div class='btn'>
-                    <button class="view-product-btn" data-name="${p.id}">📦 Voir le produit</button>
+                    <button class="view-product-btn" data-id="${p.id}">📦 Voir le produit</button>
                     <button class="contact-product-btn" data-name="${p.name}">💬 Contacter</button>
                 </div>
             </div>
@@ -119,7 +119,7 @@ function renderShopInfo() {
     });
 
     document.querySelectorAll('.view-product-btn').forEach(btn => {
-        btn.onclick = () => viewProduct(btn.dataset.name);
+        btn.onclick = () => viewProduct(btn.dataset.id);
     });
 }
 
@@ -129,21 +129,38 @@ function renderShopInfo() {
 function contactAboutProduct(productName) {
     const msg = `Bonjour 👋 Je suis intéressé par le produit "${productName}" de votre boutique "${shopData.name}".`;
     const wa = shopData.whatsapp.replace(/[^0-9]/g, '');
-    window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
+    Swal.fire({
+        title: 'Redirection vers WhatsApp',
+        text: `Vous allez être redirigé vers WhatsApp pour contacter le vendeur.`,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Continuer',
+        cancelButtonText: 'Annuler'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+    });
 }
 
 /* ===========================
    View Product Details
 =========================== */
 function viewProduct(id) {
-
     const shop = shopData.id;
-
-    window.open(`/view_prod/${shop}/${id}/`, '_blank');
-
-//     window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
- }
-
+    Swal.fire({
+        title: 'Voir le produit',
+        text: 'Vous allez être redirigé vers la page du produit.',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Continuer',
+        cancelButtonText: 'Annuler'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.open(`/view_prod/${shop}/${id}/`, '_blank');
+        }
+    });
+}
 
 /* ===========================
    Search
