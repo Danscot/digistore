@@ -127,10 +127,9 @@ USE_TZ = True
 # settings.py
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/var/www/digistore/staticfiles/'  # This is what Nginx will serve
-
+STATIC_ROOT = '/var/www/digistore/staticfiles/'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/var/www/digistore/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),

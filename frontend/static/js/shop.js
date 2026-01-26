@@ -7,6 +7,13 @@ const shopData = JSON.parse($('shop-data').textContent);
 const productsData = JSON.parse($('products-data').textContent);
 const metaData = JSON.parse($('meta-data').textContent);
 
+function truncate(text, maxLength = 100) {
+    if (!text) return '';
+    return text.length > maxLength
+        ? text.slice(0, maxLength) + '…'
+        : text;
+}
+
 /* ===========================
    Categories & Icons
 =========================== */
@@ -61,8 +68,7 @@ function renderShopInfo() {
 
 /* ===========================
    Render Products
-=========================== */
-function renderProducts(products) {
+=========================== */function renderProducts(products) {
     const grid = $('productsGrid');
     const empty = $('noProducts');
 
@@ -74,31 +80,39 @@ function renderProducts(products) {
 
     empty.style.display = 'none';
 
-    grid.innerHTML = products.map(p => `
+    grid.innerHTML = products.map(p => {
+        console.log(p)
+        const mainImage = p.images?.[0] || null;
+        const thumbnails = p.images?.slice(1) || [];
+
+        return `
         <div class="product-card">
             <div class="product-image">
-                ${p.image
-                    ? `<img src="${p.image}" alt="${p.name}">`
+                ${mainImage
+                    ? `<img src="${mainImage}" alt="${p.name}">`
                     : `<div class="product-placeholder">📦</div>`
+                }
+                ${thumbnails.length
+                    ? `<div class="product-thumbnails">
+                        ${thumbnails.map(img => `<img src="${img}" alt="${p.name}" class="thumb">`).join('')}
+                      </div>`
+                    : ''
                 }
             </div>
 
             <div class="product-body">
-                <span class="product-category">
-                    ${CATEGORY_NAMES[p.category]}
-                </span>
-                <h3 class="product-name">${p.name}</h3>
-                <p class="product-description">${p.description}</p>
-                <div class="product-price">
-                    ${p.price.toLocaleString()} 
-                </div>
+                <span class="product-category">${CATEGORY_NAMES[p.category]}</span>
+                <h3 class="product-name">${truncate(p.name, 20)}</h3>
+                <p class="product-description">${truncate(p.description, 100)}</p>
+                <div class="product-price">${p.price.toLocaleString()} FCFA</div>
 
-                <button class="contact-product-btn" data-name="${p.name}">
-                    💬 Contacter
-                </button>
+                <div class='btn'>
+                    <button class="view-product-btn" data-name="${p.name}">📦 Voir le produit</button>
+                    <button class="contact-product-btn" data-name="${p.name}">💬 Contacter</button>
+                </div>
             </div>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
 
     document.querySelectorAll('.contact-product-btn').forEach(btn => {
         btn.onclick = () => contactAboutProduct(btn.dataset.name);
@@ -135,4 +149,15 @@ document.addEventListener('DOMContentLoaded', () => {
     renderShopInfo();
     renderProducts(productsData);
     setupSearch();
+});
+
+document.querySelectorAll('.product-card').forEach(card => {
+    const mainImg = card.querySelector('.product-image img');
+    const thumbs = card.querySelectorAll('.product-thumbnails .thumb');
+
+    thumbs.forEach(t => {
+        t.addEventListener('click', () => {
+            mainImg.src = t.src;
+        });
+    });
 });

@@ -37,28 +37,27 @@ function getCSRFToken() {
 /* ===========================
    API Helper
 =========================== */
-async function apiRequest(url, method='GET', data=null) {
+async function apiRequest(url, method='GET', body=null, isForm=false) {
     const options = {
         method,
         credentials: 'include',
-        headers: {
+        headers: isForm ? {'X-CSRFToken': getCSRFToken()} : {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCSRFToken(),
         },
     };
-    if (data) options.body = JSON.stringify(data);
 
-    console.log(data)
+    if (body) options.body = isForm ? body : JSON.stringify(body);
 
     const res = await fetch(url, options);
     const text = await res.text();
+
     let json;
     try { json = JSON.parse(text); } catch { json = null; }
 
-    if (!res.ok) throw new Error(json?.detail || text || 'Request failed');
+    if (!res.ok) throw new Error(json?.detail || text || 'Erreur serveur');
     return json;
 }
-
 /* ===========================
    Init
 =========================== */
@@ -129,26 +128,31 @@ function updateStats() {
 /* ===========================
    Render Products
 =========================== */
+function truncate(text, max = 60) {
+    return text.length > max ? text.slice(0, max) + '…' : text;
+}
+
 function renderProducts() {
     const tbody = $('productsTableBody');
     const empty = $('emptyProducts');
     if (!tbody) return;
 
-    if (state.products.length === 0) {
+    if (!state.products.length) {
         tbody.innerHTML = '';
-        if (empty) empty.style.display = 'block';
+        empty.style.display = 'block';
         return;
     }
-    if (empty) empty.style.display = 'none';
 
-    tbody.innerHTML = state.products.map((p,i)=>`
+    empty.style.display = 'none';
+
+    tbody.innerHTML = state.products.map((p, i) => `
         <tr>
             <td>${p.name}</td>
-            <td>${CATEGORY_CHOICES.find(c=>c.value===p.category)?.label||p.category}</td>
-            <td>${p.description}</td>
+            <td>${CATEGORY_CHOICES.find(c => c.value === p.category)?.label || p.category}</td>
+            <td>${truncate(p.description)}</td>
             <td>
-                <button class="btn btn-outline edit-btn" onclick="editProduct(${i})">✏️ Modifier</button>
-                <button class="btn btn-danger delete-btn" onclick="deleteProduct(${i})">🗑️ Supprimer</button>
+                <button class="btn btn-outline" onclick="editProduct(${i})">✏️</button>
+                <button class="btn btn-danger" onclick="deleteProduct(${i})">🗑️</button>
             </td>
         </tr>
     `).join('');
@@ -158,36 +162,30 @@ function renderProducts() {
    Product Modal
 =========================== */
 function populateCategoryChoices() {
-    const select = $('productCategory');
-    if (!select) return;
-    select.innerHTML = CATEGORY_CHOICES.map(c=>`<option value="${c.value}">${c.label}</option>`).join('');
+    $('productCategory').innerHTML = CATEGORY_CHOICES
+        .map(c => `<option value="${c.value}">${c.label}</option>`)
+        .join('');
 }
 
 function openAddProductModal() {
     state.editingIndex = null;
-    const form = $('productForm');
-    form.reset();
+    $('productForm').reset();
     $('modalTitle').textContent = 'Ajouter un produit';
-    $('productId').value = '';
-    $('productPrice').value = '';
-    if ($('productNegotiable')) $('productNegotiable').checked = false;
     $('productModal').classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
 function editProduct(index) {
-    state.editingIndex = index;
     const p = state.products[index];
     if (!p) return;
+
+    state.editingIndex = index;
     $('modalTitle').textContent = 'Modifier le produit';
-    $('productId').value = index;
     $('productName').value = p.name;
     $('productCategory').value = p.category;
     $('productDescription').value = p.description;
     $('productPrice').value = p.price;
-    if ($('productNegotiable')) $('productNegotiable').checked = !!p.negotiable;
     $('productModal').classList.add('active');
-    document.body.style.overflow = 'hidden';
 }
 
 function closeProductModal() {
@@ -195,48 +193,56 @@ function closeProductModal() {
     document.body.style.overflow = '';
 }
 
+
 /* ===========================
-   Save Product (API)
+   Save Product (Supports API & Optional Image)
 =========================== */
-$('productForm')?.addEventListener('submit', async e=>{
+$('productForm')?.addEventListener('submit', async e => {
     e.preventDefault();
-    const payload = {
-        name: $('productName').value.trim(),
-        category: $('productCategory').value,
-        description: $('productDescription').value.trim(),
-        price: $('productPrice').value.trim() || "0 XAF",
-        negotiable: $('productNegotiable')?.checked || false,
-    };
+
+    const formData = new FormData();
+    formData.append('name', $('productName').value.trim());
+    formData.append('category', $('productCategory').value);
+    formData.append('description', $('productDescription').value.trim());
+    formData.append('price', $('productPrice').value);
+
+    const image = $('productImage').files[0];
+    if (image) formData.append('image', image);
 
     try {
         let saved;
         if (state.editingIndex !== null) {
             const id = state.products[state.editingIndex].id;
-            saved = await apiRequest(`/api/products/${id}/`, 'PUT', payload);
-            state.products[state.editingIndex] = saved;
+            saved = await apiRequest(`/api/products/${id}/`, 'PUT', formData, true);
+            state.products[state.editingIndex] = { ...state.products[state.editingIndex], ...saved };
         } else {
-            saved = await apiRequest('/api/products/', 'POST', payload);
+            saved = await apiRequest('/api/products/', 'POST', formData, true);
             state.products.push(saved);
         }
+
         renderProducts();
         updateStats();
         closeProductModal();
-        alert(state.editingIndex !== null ? 'Produit mis à jour !' : 'Produit ajouté !');
-    } catch(err){ alert(err.message); }
+        alert('Produit enregistré');
+    } catch (err) {
+        alert(err.message);
+    }
 });
 
+/* ===========================
+   Delete Product
+=========================== */
 function deleteProduct(index) {
-    if (!state.products[index]) return;
     const p = state.products[index];
     if (!confirm(`Supprimer "${p.name}" ?`)) return;
 
     apiRequest(`/api/products/${p.id}/`, 'DELETE')
-        .then(()=> {
-            state.products.splice(index,1);
+        .then(() => {
+            state.products.splice(index, 1);
             renderProducts();
             updateStats();
         })
-        .catch(err=>alert(err.message));
+        .catch(err => alert(err.message));
 }
 
 /* ===========================

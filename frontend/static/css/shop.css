@@ -253,7 +253,7 @@
     overflow: hidden;
 }
 
-.contact-product-btn {
+.contact-product-btn  {
     width: 100%;
     padding: 0.875rem;
     background: var(--primary);
@@ -270,10 +270,36 @@
     transition: all 0.3s ease;
 }
 
+.view-product-btn  {
+
+    width: 100%;
+    padding: 0.875rem;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn {
+
+    display: grid;
+
+    gap: 1rem;
+}
 .contact-product-btn:hover {
     background: var(--primary-dark);
 }
-
+.view-product-btn:hover {
+    background: var(--primary-dark);
+}
 /* No Products */
 .no-products {
     text-align: center;

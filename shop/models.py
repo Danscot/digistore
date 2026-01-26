@@ -51,7 +51,7 @@ class Product(models.Model):
 
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name="products", verbose_name="Boutique")
 
-    image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name="Image")
+    image = models.JSONField(default=list) 
 
     price = models.CharField(max_length=16, verbose_name="prix du produit", default="O")
 

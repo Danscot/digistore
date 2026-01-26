@@ -16,6 +16,9 @@ from django.forms.models import model_to_dict
 
 from django.db.models import Count
 
+from django.conf import settings
+
+
 import json
 
 def index(request):
@@ -24,26 +27,26 @@ def index(request):
 
 def shops(request):
 
-    shops_qs = (
+	shops_qs = (
 
-        Shop.objects
+		Shop.objects
 
-        .annotate(product_count=Count("products"))
+		.annotate(product_count=Count("products"))
 
-        .values(
-            "id",
-            "shop_name",
-            "shop_category",
-            "location",
-            "shop_id",
-            "product_count",
-        )
-    )
+		.values(
+			"id",
+			"shop_name",
+			"shop_category",
+			"location",
+			"shop_id",
+			"product_count",
+		)
+	)
 
-    return render(request, "shops.html", {
+	return render(request, "shops.html", {
 
-        "shops": json.dumps(list(shops_qs), cls=DjangoJSONEncoder)
-    })
+		"shops": json.dumps(list(shops_qs), cls=DjangoJSONEncoder)
+	})
 
 def signup(request):
 
@@ -60,7 +63,6 @@ def dashboard(request):
 
 	return render(request, 'dashboard.html', {"id":current_shop.shop_id})
 
-
 def shop(request, shop_id):
 
 	current_shop = Shop.objects.get(shop_id=shop_id)
@@ -68,31 +70,31 @@ def shop(request, shop_id):
 	products = Product.objects.filter(shop=current_shop)
 
 	shop_data = {
-
 		"name": current_shop.shop_name,
 		"category": current_shop.shop_category,
 		"location": current_shop.location,
 		"whatsapp": current_shop.wa_num,
 	}
 
-	products_data = [
-		{
-			"id": p.id,
-			"name": p.name,
-			"description": p.description,
-			"category": p.category,
-			"price":p.price
-		}
-		for p in products
-	]
+	products_data = []
 
+	for p in products:
+		
+	    # Convert JSON list of image paths to absolute URLs
+	    images = [request.build_absolute_uri(settings.MEDIA_URL + img) for img in p.image] if p.image else []
+
+	    products_data.append({
+	        "id": p.id,
+	        "name": p.name,
+	        "description": p.description,
+	        "category": p.category,
+	        "price": p.price,
+	        "images": images,
+	    })
 
 	context = {
-
 		"shop_json": json.dumps(shop_data, cls=DjangoJSONEncoder),
-
 		"products_json": json.dumps(products_data, cls=DjangoJSONEncoder),
-
 		"num": len(products),
 	}
 

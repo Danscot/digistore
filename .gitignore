@@ -210,3 +210,5 @@ __marimo__/
 .todo.txt
 
 db.sqlite3
+
+media/

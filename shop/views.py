@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+
 from django.contrib.auth.models import User
 
 from rest_framework.decorators import api_view
@@ -6,233 +8,152 @@ from rest_framework.response import Response
 
 from rest_framework import status
 
-from django.contrib.auth import authenticate, login
+from django.conf import settings
 
 from .models import Shop, Product
 
-from django.shortcuts import get_object_or_404
+import os
 
-# Create your views here.
-
-
+# -------------------------------
+# Dashboard Data
+# -------------------------------
 @api_view(["GET"])
-
 def dashboard_data(request):
+    if not request.user.is_authenticated:
+        return Response({"detail": "Unauthorized"}, status=401)
 
-	if not request.user.is_authenticated:
+    shop = get_object_or_404(Shop, owner=request.user)
+    products = shop.products.all().values(
+        "id", "name", "category", "description", "price", "image"
+    )
 
-		return Response(status=401)
+    # Ensure image URLs are absolute if available
+    products_list = []
+    for p in products:
+        products_list.append({
+            "id": p["id"],
+            "name": p["name"],
+            "category": p["category"],
+            "description": p["description"],
+            "price": p["price"],
+            "image": request.build_absolute_uri(p["image"]) if p["image"] else None
+        })
 
-	shop = Shop.objects.get(owner=request.user)
+    return Response({
+        "shop": {
+            "name": shop.shop_name,
+            "category": shop.shop_category,
+            "wa_num": shop.wa_num,
+            "location": shop.location,
+            "id": shop.shop_id
+        },
+        "products": products_list
+    })
 
-	products = shop.products.all().values(
 
-		"id", "name", "category", "description", "price"
-	)
-
-	return Response({
-
-		"shop": {
-
-			"name": shop.shop_name,
-
-			"category": shop.shop_category,
-
-			"wa_num": shop.wa_num,
-
-			"location": shop.location,
-
-			"id":shop.shop_id
-		},
-
-		"products": list(products)
-	})
-
-@api_view(['POST'])
-
+# -------------------------------
+# Update Shop Info
+# -------------------------------
+@api_view(["POST"])
 def update_shop_infos(request):
+    if not request.user.is_authenticated:
+        return Response({"detail": "Unauthorized"}, status=401)
 
-	if not request.user.is_authenticated:
+    data = request.data
+    required_fields = ["shop_name", "shop_cat", "wa_num", "location"]
+    if any(not data.get(f) for f in required_fields):
+        return Response(
+            {"detail": "Tous les champs sont obligatoires."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
-		return Response(status=401)
+    shop = get_object_or_404(Shop, owner=request.user)
+    shop.shop_name = data["shop_name"]
+    shop.shop_category = data["shop_cat"]
+    shop.wa_num = data["wa_num"]
+    shop.location = data["location"]
+    shop.shop_id = f"@{data['shop_name'].replace(' ', '_').lower()}"
+    shop.save()
 
-	data = request.data
-
-	required_fields = [
-
-		"shop_name",
-		"shop_cat",
-		"wa_num",
-		"location",
-	]
-
-	for field in required_fields:
-
-		if not data.get(field):
-
-			return Response(
-				{
-					"status": "failed",
-					"message": "Vous devez fournir toutes les informations",
-				},
-				status=status.HTTP_400_BAD_REQUEST,
-			)
-
-	current_shop = Shop.objects.filter(owner=request.user).first()
-
-	if current_shop:
-
-		current_shop.shop_name = data['shop_name']
-
-		current_shop.shop_category = data["shop_cat"]
-
-		current_shop.wa_num = data["wa_num"]
-
-		current_shop.location = data["location"]
-
-		current_shop.shop_id = f"@{data['shop_name'].replace(' ', '_').lower()}"
-
-		current_shop.save()
+    return Response({"status": "updated", "message": "Informations mises à jour"})
 
 
-		return Response(
-			{
-				"status": "updated",
-				"message": "Vos informations on étaient enregistrer.",
-
-			},
-			status=status.HTTP_200_OK,
-		)
-
-
-	else:
-
-		return Response(
-
-			{
-
-				"status":"Failed",
-				"message": "Cette boutique n'existe pas."
-			},
-
-			status=status.HTTP_401_UNAUTHORIZED
-
-		)
-
-
-
-
+# -------------------------------
+# Create / Update / Delete Product
+# -------------------------------
 @api_view(["POST", "PUT", "DELETE"])
 def manage_product(request, product_id=None):
-	"""
-	Create or update a product for the current user's shop.
-	POST without product_id → create
-	PUT with product_id → update
-	"""
-	if not request.user.is_authenticated:
+    if not request.user.is_authenticated:
+        return Response({"detail": "Unauthorized"}, status=401)
 
-		return Response({"detail": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+    shop = get_object_or_404(Shop, owner=request.user)
 
-	# -----------------
-	# DELETE PRODUCT
-	# -----------------
-	if request.method == "DELETE":
+    # DELETE PRODUCT
+    if request.method == "DELETE":
+        product = get_object_or_404(Product, id=product_id, shop=shop)
+        product.delete()
+        return Response({"status": "deleted"}, status=200)
 
-		product = get_object_or_404(Product, pk=product_id, shop__owner=request.user)
+    data = request.data
 
-		product.delete()
+    # CREATE PRODUCT
+    if request.method == "POST":
+        required_fields = ["name", "category", "description", "price"]
+        if any(not data.get(f) for f in required_fields):
+            return Response({"detail": "Tous les champs sont obligatoires."}, status=400)
 
-		return Response({"status": "deleted"}, status=200)
+        product = Product.objects.create(
+            shop=shop,
+            name=data["name"],
+            category=data["category"],
+            description=data["description"],
+            price=data["price"],
+            image=[]  # initialize empty list
+        )
 
+        # handle image upload
+        image_file = request.FILES.get("image")
+        if image_file:
+            filename = f"{product.id}_{image_file.name}"
+            filepath = os.path.join(settings.MEDIA_ROOT, filename)
+            with open(filepath, "wb+") as f:
+                for chunk in image_file.chunks():
+                    f.write(chunk)
+            product.image.append(filename)
+            product.save()
 
-	shop = get_object_or_404(Shop, owner=request.user)
+    # UPDATE PRODUCT
+    elif request.method == "PUT":
+        if not product_id:
+            return Response({"detail": "Product ID requis."}, status=400)
 
-	data = request.data
+        product = get_object_or_404(Product, id=product_id, shop=shop)
+        product.name = data.get("name", product.name)
+        product.category = data.get("category", product.category)
+        product.description = data.get("description", product.description)
+        product.price = data.get("price", product.price)
 
-	required_fields = ["name", "category", "description"]
+        # handle image upload
+        image_file = request.FILES.get("image")
+        if image_file:
+            filename = f"{product.id}_{image_file.name}"
+            filepath = os.path.join(settings.MEDIA_ROOT, filename)
+            with open(filepath, "wb+") as f:
+                for chunk in image_file.chunks():
+                    f.write(chunk)
+            product.image.append(filename)
 
-	if any(not data.get(field) for field in required_fields):
+        product.save()
 
-		return Response(
-
-			{"detail": "Tous les champs sont obligatoires."},
-
-			status=status.HTTP_400_BAD_REQUEST
-		)
-
-	# -----------------
-	# UPDATE PRODUCT
-	# -----------------
-
-	if request.method == "PUT":
-
-		if not product_id:
-
-			return Response({"detail": "Product ID is required for update."}, status=400)
-
-		product = get_object_or_404(shop.products, id=product_id)
-
-		current_shop = Shop.objects.filter(owner=request.user).first()
-
-		product.name = data["name"]
-
-		product.category = data["category"]
-
-		product.description = data["description"]
-
-		product.shop = current_shop
-
-		product.price = data["price"]
-
-		# Optional: handle image if provided
-		if request.FILES.get("image"):
-
-			product.image = request.FILES["image"]
-
-		product.save()
-
-		return Response({
-
-			"id": product.id,
-
-			"name": product.name,
-
-			"category": product.category,
-
-			"description": product.description
-
-		}, status=status.HTTP_200_OK)
-
-	# -----------------
-	# CREATE PRODUCT
-	# -----------------
-	elif request.method == "POST":
-
-		product = Product.objects.create(
-
-			shop=shop,
-
-			name=data["name"],
-
-			category=data["category"],
-
-			description=data["description"],
-
-			price=data["price"],
-
-			image=request.FILES.get("image")
-		)
-
-		return Response({
-
-			"id": product.id,
-
-			"name": product.name,
-
-			"category": product.category,
-
-			"description": product.description
-
-		}, status=status.HTTP_201_CREATED
-
-		)
+    # return product JSON with proper URLs
+    return Response({
+        "id": product.id,
+        "name": product.name,
+        "category": product.category,
+        "description": product.description,
+        "price": product.price,
+        "images": [
+            request.build_absolute_uri(settings.MEDIA_URL + img)
+            for img in product.image
+        ] if product.image else []
+    }, status=200 if request.method == "PUT" else 201)
