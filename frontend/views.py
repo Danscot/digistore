@@ -8,7 +8,7 @@ from django.http import JsonResponse
 
 from django.contrib import messages
 
-from shop.models import Shop, Product
+from shop.models import Shop, Product, ShopHistory
 
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -18,6 +18,9 @@ from django.db.models import Count
 
 from django.conf import settings
 
+from django.shortcuts import get_object_or_404
+
+from django.http import Http404
 
 import json
 
@@ -67,48 +70,71 @@ def dashboard(request):
 
 	return render(request, 'index_fr.html')
 
+
+
 def shop(request, shop_id):
 
-	current_shop = Shop.objects.get(shop_id=shop_id)
+    current_shop = Shop.objects.filter(shop_id=shop_id).first()
 
-	products = Product.objects.filter(shop=current_shop)
+    if current_shop is None:
 
-	shop_data = {
-		"name": current_shop.shop_name,
-		"category": current_shop.shop_category,
-		"location": current_shop.location,
-		"whatsapp": current_shop.wa_num,
-		"id": current_shop.shop_id
-	}
+        history = ShopHistory.objects.filter(old_shop_name=shop_id).select_related("shop").first()
 
-	products_data = []
+        if history:
 
-	for p in products:
+            current_shop = history.shop
 
-		print(p.id)
-		
-		# Convert JSON list of image paths to absolute URLs
-		images = [request.build_absolute_uri(settings.MEDIA_URL + img) for img in p.image] if p.image else []
+        else:
 
-		products_data.append({
+            raise Http404("Shop not found")
 
-			"id": p.id,
-			"name": p.name,
-			"description": p.description,
-			"category": p.category,
-			"price": p.price,
-			"images": images,
 
-		})
+    products = Product.objects.filter(shop=current_shop)
 
-	context = {
-		"shop_json": json.dumps(shop_data, cls=DjangoJSONEncoder),
-		"products_json": json.dumps(products_data, cls=DjangoJSONEncoder),
-		"num": len(products),
-	}
+    shop_data = {
 
-	return render(request, "my_shop.html", context)
+        "name": current_shop.shop_name,
+        "category": current_shop.shop_category,
+        "location": current_shop.location,
+        "whatsapp": current_shop.wa_num,
+        "id": current_shop.shop_id,
+    }
+
+    products_data = []
+
+    for p in products:
+
+        images = [
+
+            request.build_absolute_uri(settings.MEDIA_URL + img)
+
+            for img in p.image
+
+        ] if p.image else []
+
+        products_data.append({
+
+            "id": p.id,
+            "name": p.name,
+            "description": p.description,
+            "category": p.category,
+            "price": p.price,
+            "images": images,
+        })
+
+    return render(request, "my_shop.html", {
+
+        "shop_json": json.dumps(shop_data, cls=DjangoJSONEncoder),
+
+        "products_json": json.dumps(products_data, cls=DjangoJSONEncoder),
+
+        "num": products.count(),
+    })
+
 
 def view_prod(request, shopId, productId):
 
 	return render(request, 'view_prod.html')
+
+
+################################

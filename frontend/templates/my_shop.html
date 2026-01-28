@@ -11,6 +11,9 @@
     <title>Boutique - DigiStore</title>
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
     <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 </head>
 
@@ -25,7 +28,7 @@
             <div class="nav-links">
                 <a href="{% url 'index' %}">Accueil</a>
                 <a href="{% url 'shops' %}">Parcourir les boutiques</a>
-                <a href="{% url 'login' %}" class="nav-link">Connexion</a>
+                
                 <a href="{% url 'dashboard' %}" class="btn btn-primary">Ma boutique</a>
             </div>
             <div class="mobile-menu-btn" id="mobileMenuBtn">

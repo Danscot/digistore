@@ -10,7 +10,7 @@ from rest_framework import status
 
 from django.conf import settings
 
-from .models import Shop, Product
+from .models import Shop, Product, ShopHistory
 
 import os
 
@@ -56,23 +56,41 @@ def dashboard_data(request):
 # -------------------------------
 @api_view(["POST"])
 def update_shop_infos(request):
+
     if not request.user.is_authenticated:
+
         return Response({"detail": "Unauthorized"}, status=401)
 
     data = request.data
+
     required_fields = ["shop_name", "shop_cat", "wa_num", "location"]
+
     if any(not data.get(f) for f in required_fields):
+
         return Response(
+
             {"detail": "Tous les champs sont obligatoires."},
             status=status.HTTP_400_BAD_REQUEST
         )
 
     shop = get_object_or_404(Shop, owner=request.user)
+
+    shop_history = ShopHistory.objects.get(shop=shop)
+
+    shop_history.old_shop_name = shop.shop_id
+
     shop.shop_name = data["shop_name"]
+
     shop.shop_category = data["shop_cat"]
+
     shop.wa_num = data["wa_num"]
+
     shop.location = data["location"]
+
     shop.shop_id = f"@{data['shop_name'].replace(' ', '_').lower()}"
+
+    shop_history.save()
+
     shop.save()
 
     return Response({"status": "updated", "message": "Informations mises à jour"})

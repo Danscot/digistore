@@ -62,3 +62,14 @@ class Product(models.Model):
     def __str__(self):
 
         return f"{self.name} ({self.shop.shop_name})"
+
+
+class ShopHistory(models.Model):
+
+    shop = models.ForeignKey(Shop, verbose_name="Boutique", on_delete=models.CASCADE)
+
+    old_shop_name = models.CharField(max_length=100)
+
+    def __str__(self):
+
+        return f'{self.shop} {self.old_shop_name}'

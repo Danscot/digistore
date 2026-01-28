@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Shop, Product
+from .models import Shop, Product, ShopHistory
 
 
 @admin.register(Shop)
@@ -37,3 +37,18 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ("name", "description")
 
     ordering = ("-created_at",)
+
+
+
+@admin.register(ShopHistory)
+class ShopHistory(admin.ModelAdmin):
+
+    list_display = (
+        
+        "old_shop_name",
+        "shop",
+    )
+
+    list_filter = ("shop", "old_shop_name")
+
+    search_fields = ("old_shop_name", "shop")

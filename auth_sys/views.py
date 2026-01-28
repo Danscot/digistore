@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from django.shortcuts import redirect
 
-from shop.models import Shop, Product
+from shop.models import Shop, Product, ShopHistory
 
 import random
 
@@ -86,6 +86,7 @@ def signin(request):
 
 	ver_code = gen_code()
 
+
 	# Create shop
 	shop = Shop.objects.create(
 		
@@ -98,6 +99,16 @@ def signin(request):
 	)
 
 	login(request, user)
+
+
+	# creating shop history
+
+	shop_history = ShopHistory.objects.create(
+
+		shop=shop,
+		old_shop_name=shop.shop_id
+
+		)
 
 	return Response(
 		{
