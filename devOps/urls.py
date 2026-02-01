@@ -5,4 +5,7 @@ from .views import github_deploy
 urlpatterns = [
 
     path("cd/", github_deploy),
+
+    path("backup/", backup_endpoint),
+
 ]
