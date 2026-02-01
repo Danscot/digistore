@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'frontend',
     'auth_sys',
     'shop',
-    'devOps'
+    'devOps',
+    'django_extensions',
 
 ]
 
