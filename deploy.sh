@@ -1,5 +1,8 @@
 #!/bin/bash
-set -e
+
+set -x   # print every command
+
+exec > >(tee -a /home/ubuntu/digistore/deploy.log) 2>&1
 
 echo "🚀 Starting deployment..."
 
