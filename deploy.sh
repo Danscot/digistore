@@ -8,7 +8,7 @@ echo "🚀 activating env..."
 
 cd /home/ubuntu/digistore
 
-source venv/bin/activate
+source env/bin/activate
 
 
 echo "🚀 pulling up from github..."
