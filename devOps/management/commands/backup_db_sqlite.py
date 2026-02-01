@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 from devOps.tasks import backup_db_sqlite
 
 class Command(BaseCommand):
+    
     help = "Backup SQLite DB and send via email"
 
     def handle(self, *args, **kwargs):
