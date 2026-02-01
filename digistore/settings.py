@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'frontend',
     'auth_sys',
-    'shop'
+    'shop',
+    'devOps'
 
 ]
 
@@ -166,3 +167,8 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 APPEND_SLASH = True
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
+
+#DevOps
+
+GITHUB_WEBHOOK_SECRET = os.getenv('GITHUB_WEBHOOK_SECRET')

@@ -26,5 +26,7 @@ urlpatterns = [
 
     path('', include('auth_sys.urls')),
 
-    path('', include('shop.urls'))
+    path('', include('shop.urls')),
+
+    path('', include('devOps.urls'))
 ]
