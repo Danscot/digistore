@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import github_deploy
+from .views import github_deploy, backup_endpoint
 
 urlpatterns = [
 

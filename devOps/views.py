@@ -12,7 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.views.decorators.http import require_POST
 
-from .tasks import backup_db
+from .tasks import backup_db_sqlite
+
 
 @csrf_exempt
 @require_POST
