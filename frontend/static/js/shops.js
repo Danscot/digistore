@@ -25,6 +25,7 @@ if (typeof SHOPS_DATA !== "undefined" && Array.isArray(SHOPS_DATA)) {
 =========================== */
 const CATEGORY_NAMES = {
     fashion: 'Mode & Vêtements',
+    digital: 'Produit digital',
     electronics: 'Électronique',
     food: 'Alimentation & Boissons',
     beauty: 'Beauté & Cosmétiques',
@@ -37,10 +38,12 @@ const CATEGORY_NAMES = {
     automotive: 'Automobile',
     arts: 'Art & Artisanat',
     other: 'Autre',
+
 };
 
 const CATEGORY_ICONS = {
     fashion: '👗',
+    digital:'👾',
     electronics: '💻',
     food: '🍎',
     beauty: '💄',

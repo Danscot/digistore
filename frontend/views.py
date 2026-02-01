@@ -27,6 +27,7 @@ import json
 def index(request):
 
 	return render(request, 'index_fr.html')
+    
 def shops(request):
     shops_qs = (
         Shop.objects

@@ -5,6 +5,7 @@ const $ = id => document.getElementById(id);
 
 const CATEGORY_CHOICES = [
     {value:'fashion', label:'Mode & Vêtements'},
+    {value:'digital', label:'Produit digital'},
     {value:'electronics', label:'Électronique'},
     {value:'food', label:'Alimentation & Boissons'},
     {value:'beauty', label:'Beauté & Cosmétiques'},

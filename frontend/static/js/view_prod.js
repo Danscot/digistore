@@ -10,6 +10,7 @@ function getUrlParameter(name) {
 
 function getIconForCategory(category) {
     const icons = {
+        'digital': '👾',
         'fashion': '👗',
         'electronics': '💻',
         'food': '🍎',

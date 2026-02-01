@@ -19,6 +19,7 @@ function truncate(text, maxLength = 100) {
 =========================== */
 const CATEGORY_NAMES = {
     fashion: 'Mode & Vêtements',
+    digital:'Produit digital',
     electronics: 'Électronique',
     food: 'Alimentation & Boissons',
     beauty: 'Beauté & Cosmétiques',
@@ -36,6 +37,7 @@ const CATEGORY_NAMES = {
 const CATEGORY_ICONS = {
     fashion: '👗',
     electronics: '💻',
+    digital: '👾',
     food: '🍎',
     beauty: '💄',
     home: '🏠',

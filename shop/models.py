@@ -7,6 +7,7 @@ class Shop(models.Model):
     CATEGORY_CHOICES = [
 
         ('fashion', 'Mode & Vêtements'),
+        ('digital', 'Produit digital'),
         ('electronics', 'Électronique'),
         ('food', 'Alimentation & Boissons'),
         ('beauty', 'Beauté & Cosmétiques'),
