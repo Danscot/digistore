@@ -6,3 +6,5 @@ dotenv
 pillow
 gunicorn
 subprocess
+hashlib
+hmac
