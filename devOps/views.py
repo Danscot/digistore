@@ -33,16 +33,18 @@ def github_deploy(request):
 
 		return HttpResponseForbidden("Invalid signature")
 
-	subprocess.Popen(
+	log_file = "/home/ubuntu/digistore/deploy.log"
 
-		["/home/ubuntu/digistore/deploy.sh"],
+	with open(log_file, "a") as f:
 
-		stdout=subprocess.DEVNULL,
-		
-		stderr=subprocess.DEVNULL
-	)
-
-
+	    f.write("\n=== Deploy triggered via API ===\n")
+	    
+	    subprocess.run(
+	        ["/home/ubuntu/digistore/deploy.sh"],
+	        stdout=f,
+	        stderr=f,
+	        text=True
+	    )
 	return HttpResponse("Deploy triggered", status=200)
 
 
