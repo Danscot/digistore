@@ -27,29 +27,29 @@ import json
 def index(request):
 
 	return render(request, 'index_fr.html')
-
 def shops(request):
+    shops_qs = (
+        Shop.objects
+        .annotate(product_count=Count("products"))
+        .filter(product_count__gt=0)      # ✅ only shops with products
+        .order_by("?")                    # 🔀 random order
+        .values(
+            "id",
+            "shop_name",
+            "shop_category",
+            "location",
+            "shop_id",
+            "product_count",
+        )
+    )
 
-	shops_qs = (
-
-		Shop.objects
-
-		.annotate(product_count=Count("products"))
-
-		.values(
-			"id",
-			"shop_name",
-			"shop_category",
-			"location",
-			"shop_id",
-			"product_count",
-		)
-	)
-
-	return render(request, "shops.html", {
-
-		"shops": json.dumps(list(shops_qs), cls=DjangoJSONEncoder)
-	})
+    return render(
+        request,
+        "shops.html",
+        {
+            "shops": json.dumps(list(shops_qs), cls=DjangoJSONEncoder)
+        }
+    )
 
 def signup(request):
 
