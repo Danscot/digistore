@@ -32,8 +32,8 @@ def shops(request):
     shops_qs = (
         Shop.objects
         .annotate(product_count=Count("products"))
-        .filter(product_count__gt=0)      # ✅ only shops with products
-        .order_by("?")                    # 🔀 random order
+        .filter(product_count__gt=0)      
+        .order_by("?")                    
         .values(
             "id",
             "shop_name",
@@ -137,5 +137,3 @@ def view_prod(request, shopId, productId):
 
 	return render(request, 'view_prod.html')
 
-
-################################
